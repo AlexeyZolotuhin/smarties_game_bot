@@ -44,11 +44,18 @@ class GameConfig:
 
 
 @dataclass
+class BotConfig:
+    access_token: str
+    id: int
+
+
+@dataclass
 class Config:
     admin: AdminConfig
     session: SessionConfig = None
     database: DatabaseConfig = None
     game: GameConfig = None
+    bot: BotConfig = None
 
 
 def setup_config(app: "Application", config_path: str):
@@ -64,6 +71,10 @@ def setup_config(app: "Application", config_path: str):
             password=raw_config["admin"]["password"],
         ),
         database=DatabaseConfig(**raw_config["database"]),
+        bot=BotConfig(
+            access_token=raw_config["bot"]["token"],
+            id=raw_config["bot"]["id"]
+        ),
         game=GameConfig(
             theme_id=raw_config["game"]["theme_id"],
             time_for_game=raw_config["game"]["time_for_game"],
@@ -78,4 +89,3 @@ def setup_config(app: "Application", config_path: str):
             ]
         )
     )
-

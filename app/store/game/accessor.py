@@ -94,7 +94,7 @@ class GameAccessor(BaseAccessor):
         update_query = update(GamerModel) \
             .where(GamerModel.id_tguser == id_tguser) \
             .values(number_of_victories=number_of_victories)
-        update_gamer = (await self.make_update_query(update_query)).scalars().first()
+        update_gamer = await self.make_update_query(update_query)
         return Gamer(id=update_gamer.id,
                      id_tguser=update_gamer.id_tguser,
                      username=update_gamer.username,
@@ -119,7 +119,7 @@ class GameAccessor(BaseAccessor):
                                   theme_id: int | None,
                                   time_for_game: int | None,
                                   time_for_answer: int | None,
-                                  gamers: list["Gamer"]) -> GameSession:
+                                  gamers_id: list[int]) -> GameSession:
         if not theme_id:
             theme_id = self.app.config.game.theme_id
         if not time_for_game:
@@ -134,10 +134,10 @@ class GameAccessor(BaseAccessor):
                                   game_end=datetime.utcnow() + timedelta(minutes=time_for_game),
                                   game_progress=[
                                       GameProgressModel(
-                                          id_gamer=g.id,
+                                          id_gamer=g_id,
                                           difficulty_level=(
                                               random.choice(self.app.config.game.difficulty_levels)).level,
-                                      ) for g in gamers
+                                      ) for g_id in gamers_id
                                   ]
                                   )
         await self.make_add_query(new_gs)
@@ -195,7 +195,7 @@ class GameAccessor(BaseAccessor):
         query = select(GameSessionModel).where(
             and_(
                 GameSessionModel.chat_id == chat_id,
-                GameSession.state == state,
+                GameSessionModel.state == state,
             )
         ).options(joinedload(GameSessionModel.game_progress))
 

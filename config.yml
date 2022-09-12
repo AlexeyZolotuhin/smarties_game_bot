@@ -9,6 +9,9 @@ database:
   user: user_pg
   password: user_pass
   database: smarties_game
+bot:
+  token: 5579588003:AAEnLRBNcaZub9BUpX48Iti9_cqiG8i5c48
+  id: 5579588003
 game:
   theme_id: -1
   time_for_game: 5

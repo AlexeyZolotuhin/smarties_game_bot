@@ -22,3 +22,31 @@ class PathwayListSchema(Schema):
 
 class ResponsePathwayListSchema(OkResponseSchema):
     data = fields.Nested(PathwayListSchema)
+
+
+class UpdateVictoriesGamerSchema(Schema):
+    id_tguser = fields.Int(required=True)
+    number_of_victories = fields.Int(required=True)
+
+
+class RequestGamerSchema(Schema):
+    id_tguser = fields.Int(required=True)
+    username = fields.Str(required=True)
+
+
+class GamerSchema(RequestGamerSchema):
+    id = fields.Int(required=False)
+    number_of_defeats = fields.Int(required=False)
+    number_of_victories = fields.Int(required=False)
+
+
+class ResponseGamerSchema(OkResponseSchema):
+    data = fields.Nested(GamerSchema)
+
+
+class GamerListSchema(Schema):
+    gamers = fields.Nested(GamerSchema, many=True)
+
+
+class ResponseGamerListSchema(OkResponseSchema):
+    data = fields.Nested(GamerListSchema)
