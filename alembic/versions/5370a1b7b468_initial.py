@@ -1,8 +1,8 @@
-"""Init
+"""initial
 
-Revision ID: 4ad936357735
+Revision ID: 5370a1b7b468
 Revises: 
-Create Date: 2022-09-11 15:55:37.261106user_pass
+Create Date: 2022-09-13 10:53:16.699372user_pass
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '4ad936357735'
+revision = '5370a1b7b468'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -27,6 +27,7 @@ def upgrade() -> None:
     )
     op.create_table('game_sessions',
     sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('chat_id', sa.Integer(), nullable=False),
     sa.Column('game_start', sa.DateTime(), nullable=True),
     sa.Column('game_end', sa.DateTime(), nullable=True),
     sa.Column('state', sa.VARCHAR(length=15), nullable=True),
@@ -38,6 +39,7 @@ def upgrade() -> None:
     op.create_table('gamers',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('id_tguser', sa.Integer(), nullable=False),
+    sa.Column('is_master', sa.BOOLEAN(), nullable=True),
     sa.Column('username', sa.VARCHAR(length=50), nullable=False),
     sa.Column('number_of_defeats', sa.Integer(), nullable=False),
     sa.Column('number_of_victories', sa.Integer(), nullable=False),

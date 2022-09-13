@@ -31,6 +31,6 @@ class BaseAccessor:
 
     async def make_update_query(self, update_query):
         async with self.app.database.session() as session:
-            result: ChunkedIteratorResult = await session.execute(update_query)
+            result = await session.execute(update_query)
             await session.commit()
             return result

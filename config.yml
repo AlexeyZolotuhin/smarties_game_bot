@@ -4,7 +4,7 @@ admin:
   login: admin
   password: admin
 database:
-  host: 0.0.0.0
+  host: 192.168.224.31
   port: 5432
   user: user_pg
   password: user_pass

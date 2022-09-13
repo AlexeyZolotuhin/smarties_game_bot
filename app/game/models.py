@@ -1,3 +1,4 @@
+from typing import Optional
 from dataclasses import dataclass
 from app.store.database import db
 from datetime import datetime, timedelta
@@ -39,16 +40,19 @@ class GameSession:
     theme_id: int  # -1 - without theme
     time_for_game: int  # in minutes
     time_for_answer: int  # in seconds
-    game_progress: list["GameProgress"]
+    game_progress: Optional[list["GameProgress"]] = None
 
 
 @dataclass
 class GameProgress:
+    id: int
     id_gamer: int
     difficulty_level: int
     gamer_status: str  # Playing, Winner, Failed
     number_of_mistakes: int
     number_of_right_answers: int
+    is_master: int
+    id_gamesession: int
 
 # model was replaced by config file (app.config.game.difficulty_levels)
 # class PathwayModel(db):
@@ -87,7 +91,7 @@ class GamerModel(db):
 class GameSessionModel(db):
     __tablename__ = "game_sessions"
     id = Column(Integer, primary_key=True)
-    chat_id: Column(Integer, nullable=False)
+    chat_id = Column(Integer, nullable=False)
     game_start = Column(DateTime, default=datetime.utcnow)
     game_end = Column(DateTime)
     state = Column(VARCHAR(15), default='Active')  # Active, Ended, Interrupted
@@ -105,6 +109,7 @@ class GameProgressModel(db):
     id = Column(Integer, primary_key=True)
     id_gamer = Column(Integer, ForeignKey("gamers.id", ondelete="CASCADE"), nullable=False)
     difficulty_level = Column(Integer, nullable=False)
+    is_master = Column(BOOLEAN, default=False)
     id_gamesession = Column(Integer, ForeignKey("game_sessions.id", ondelete="CASCADE",
                                                 onupdate="CASCADE"), nullable=False)
     gamer_status = Column(VARCHAR(15), default="Playing")  # Playing, Winner, Failed
@@ -112,7 +117,6 @@ class GameProgressModel(db):
     number_of_right_answers = Column(Integer, default=0)
 
     gamer = relation("GamerModel", back_populates="game_progress")
-    # pathway = relation("PathwayModel", back_populates="game_progress")
     game_session = relation("GameSessionModel", back_populates="game_progress")
 
     def __repr__(self):

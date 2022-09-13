@@ -36,7 +36,7 @@ class TgClient:
         return result
 
     async def send_message(self, chat_id: int, text: str,
-                           reply_markup = None) -> SendMessageResponse:
+                           reply_markup=None) -> SendMessageResponse:
         url = self.get_url("sendMessage")
         payload = {
             'chat_id': chat_id,
@@ -50,7 +50,7 @@ class TgClient:
                 res_dict = await resp.json()
                 return SendMessageResponse.Schema().load(res_dict)
 
-    async def delete_message(self, chat_id: int, message_id:int):
+    async def delete_message(self, chat_id: int, message_id: int):
         url = self.get_url("deleteMessage")
         payload = {
             'chat_id': chat_id,
@@ -60,3 +60,19 @@ class TgClient:
             async with session.post(url, json=payload) as resp:
                 res_dict = await resp.json()
                 return res_dict
+
+    async def raw_send_message(self, chat_id: int, text: str,
+                               reply_markup=None) -> SendMessageResponse:
+        url = self.get_url("sendMessage")
+        payload = {
+            'chat_id': chat_id,
+            'text': text
+        }
+        if reply_markup:
+            payload["reply_markup"] = reply_markup.to_json()
+
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, json=payload) as resp:
+                res_dict = await resp.json()
+                return res_dict
+

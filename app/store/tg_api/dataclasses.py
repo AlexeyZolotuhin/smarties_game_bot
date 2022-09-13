@@ -35,6 +35,7 @@ class Message:
     from_: MessageFrom = field(metadata={"data_key": "from"})
     chat: Chat
     text: Optional[str] = None
+    reply_to_message: Optional["Message"] = None
 
     class Meta:
         unknown = EXCLUDE
