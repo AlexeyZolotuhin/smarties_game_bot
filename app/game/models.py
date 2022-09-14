@@ -13,6 +13,7 @@ from sqlalchemy import (
     BIGINT
 )
 
+
 # model was replaced by config file (app.config.game.difficulty_levels)
 # @dataclass
 # class Pathway:
@@ -26,10 +27,9 @@ from sqlalchemy import (
 class Gamer:
     id: int
     id_tguser: int
-    username: str
+    first_name: str
     number_of_defeats: int
     number_of_victories: int
-
 
 @dataclass
 class GameSession:
@@ -54,9 +54,10 @@ class GameProgress:
     gamer_status: str  # Playing, Winner, Failed
     number_of_mistakes: int
     number_of_right_answers: int
-    is_master: bool
+    is_answering: bool
     id_gamesession: int
     gamer: Optional[Gamer] = None
+
 
 # model was replaced by config file (app.config.game.difficulty_levels)
 # class PathwayModel(db):
@@ -83,7 +84,7 @@ class GamerModel(db):
     __tablename__ = "gamers"
     id = Column(Integer, primary_key=True)
     id_tguser = Column(BIGINT, nullable=False, unique=True)
-    username = Column(VARCHAR(50), nullable=False)
+    first_name = Column(VARCHAR(50), nullable=False)
     number_of_defeats = Column(Integer, default=0, nullable=False)
     number_of_victories = Column(Integer, default=0, nullable=False)
     game_progress = relation("GameProgressModel", back_populates="gamer")
@@ -103,8 +104,10 @@ class GameSessionModel(db):
     theme_id = Column(Integer, default=-1)  # -1 without theme, random any question
     time_for_game = Column(Integer, default=5)  # in minutes
     time_for_answer = Column(Integer, default=15)  # in seconds
+
     game_progress = relation("GameProgressModel", back_populates="game_session")
     game_master = relation("GamerModel", back_populates="game_session")
+    relation
 
     def __repr__(self):
         return f"<GameSession(id='{self.id}', chat_id='{self.chat_id}', state='{self.state}')>"
@@ -115,7 +118,7 @@ class GameProgressModel(db):
     id = Column(Integer, primary_key=True)
     id_gamer = Column(Integer, ForeignKey("gamers.id", ondelete="CASCADE"), nullable=False)
     difficulty_level = Column(Integer, nullable=False)
-    is_master = Column(BOOLEAN, default=False)
+    is_answering = Column(BOOLEAN, default=False)
     id_gamesession = Column(Integer, ForeignKey("game_sessions.id", ondelete="CASCADE",
                                                 onupdate="CASCADE"), nullable=False)
     gamer_status = Column(VARCHAR(15), default="Playing")  # Playing, Winner, Failed

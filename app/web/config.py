@@ -29,9 +29,8 @@ class DatabaseConfig:
 
 @dataclass
 class DifficultyLevel:
-    level: int
     color: str
-    max_question: int
+    max_questions: int
     max_mistakes: int
 
 
@@ -40,7 +39,7 @@ class GameConfig:
     theme_id: int
     time_for_game: int
     time_for_answer: int
-    difficulty_levels: list["DifficultyLevel"]
+    difficulty_levels: dict["DifficultyLevel"]
 
 
 @dataclass
@@ -79,13 +78,14 @@ def setup_config(app: "Application", config_path: str):
             theme_id=raw_config["game"]["theme_id"],
             time_for_game=raw_config["game"]["time_for_game"],
             time_for_answer=raw_config["game"]["time_for_answer"],
-            difficulty_levels=[
-                DifficultyLevel(
-                    level=dl_k,
-                    color=dl_v["color"],
-                    max_question=dl_v["max_question"],
-                    max_mistakes=dl_v["max_mistakes"],
-                ) for dl_k, dl_v in raw_config["game"]["difficulty_levels"].items()
-            ]
+            difficulty_levels={dl_k: DifficultyLevel(color=dl_v["color"],
+                                                     max_questions=dl_v["max_questions"],
+                                                     max_mistakes=dl_v["max_mistakes"]
+                                                     ) for dl_k, dl_v in raw_config["game"]["difficulty_levels"].items()
+                               }
         )
     )
+
+
+
+

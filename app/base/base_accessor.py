@@ -25,12 +25,12 @@ class BaseAccessor:
             return result
 
     async def make_add_query(self, new_object):
-        async with self.app.database.session() as session:
-            await session.add(new_object)
-            await session.commit()
+        async with self.app.database.session.begin() as session:
+            session.add(new_object)
+            # await session.commit()
 
     async def make_update_query(self, update_query):
         async with self.app.database.session() as session:
             result = await session.execute(update_query)
             await session.commit()
-            return result
+            return result.rowcount

@@ -2,7 +2,7 @@ from app.game.models import Gamer, GamerModel, GameSessionModel, GameSession, Ga
     GameProgress
 from app.base.base_accessor import BaseAccessor
 from sqlalchemy import String, and_, delete, or_, select, distinct, update, insert
-from sqlalchemy.orm import joinedload, subqueryload
+from sqlalchemy.orm import joinedload, join, aliased
 from datetime import datetime, timedelta
 import random
 
@@ -37,14 +37,14 @@ class GameAccessor(BaseAccessor):
     #             for p in result]
 
     # Accessor for GamerModel:
-    async def create_gamer(self, id_tguser: int, username: str) -> Gamer:
-        new_gamer = GamerModel(id_tguser=id_tguser, username=username)
+    async def create_gamer(self, id_tguser: int, first_name: str) -> Gamer:
+        new_gamer = GamerModel(id_tguser=id_tguser, first_name=first_name)
         await self.make_add_query(new_gamer)
         return Gamer(id=new_gamer.id,
                      id_tguser=new_gamer.id_tguser,
-                     username=new_gamer.username,
                      number_of_victories=new_gamer.number_of_victories,
                      number_of_defeats=new_gamer.number_of_defeats,
+                     first_name=new_gamer.first_name,
                      )
 
     async def list_gamers(self) -> list[Gamer]:
@@ -56,7 +56,7 @@ class GameAccessor(BaseAccessor):
 
         return [Gamer(id=gamer.id,
                       id_tguser=gamer.id_tguser,
-                      username=gamer.username,
+                      first_name=gamer.first_name,
                       number_of_victories=gamer.number_of_victories,
                       number_of_defeats=gamer.number_of_defeats,
                       )
@@ -71,7 +71,7 @@ class GameAccessor(BaseAccessor):
 
         return Gamer(id=result.id,
                      id_tguser=result.id_tguser,
-                     username=result.username,
+                     first_name=result.first_name,
                      number_of_victories=result.number_of_victories,
                      number_of_defeats=result.number_of_defeats,
                      )
@@ -85,24 +85,24 @@ class GameAccessor(BaseAccessor):
 
         return Gamer(id=result.id,
                      id_tguser=result.id_tguser,
-                     username=result.username,
+                     first_name=result.first_name,
                      number_of_victories=result.number_of_victories,
                      number_of_defeats=result.number_of_defeats,
                      )
 
-    async def update_gamer_victories(self, id_tguser: int, number_of_victories: int) -> Gamer:
+    async def update_gamer_victories(self, id_tguser: int, number_of_victories: int) -> int:
         update_query = update(GamerModel) \
             .where(GamerModel.id_tguser == id_tguser) \
             .values(number_of_victories=number_of_victories)
-        await self.make_update_query(update_query)
-        return await self.get_gamer_by_id_tguser(id_tguser=id_tguser)
+        rowcount = await self.make_update_query(update_query)
+        return rowcount
 
     async def update_gamer_defeats(self, id_tguser: int, number_of_defeats: int) -> Gamer:
         update_query = update(GamerModel) \
             .where(GamerModel.id_tguser == id_tguser) \
             .values(number_of_defeats=number_of_defeats)
-        await self.make_update_query(update_query)
-        return await self.get_gamer_by_id_tguser(id_tguser=id_tguser)
+        rowcount = await self.make_update_query(update_query)
+        return rowcount
 
     # Accessor for GameSessionModel (gs):
     async def create_game_session(self, chat_id: int,
@@ -125,11 +125,14 @@ class GameAccessor(BaseAccessor):
                                   id_game_master=id_game_master
                                   # game_end = datetime.utcnow() + timedelta(minutes=20)
                                   )
-        await self.make_add_query(new_gs)
+        try:
+            await self.make_add_query(new_gs)
+        except Exception as e:
+            print(e)
 
         # async with self.app.database.session.begin() as session:
         #     await session.add(new_gs)
-            # await session.commit()
+        # await session.commit()
 
         return GameSession(
             id=new_gs.id,
@@ -170,7 +173,7 @@ class GameAccessor(BaseAccessor):
                     gamer_status=gp.gamer_status,
                     number_of_mistakes=gp.number_of_mistakes,
                     number_of_right_answers=gp.number_of_right_answers,
-                    is_master=gp.is_master,
+                    is_answering=gp.is_answering,
                 ) for gp in result.game_progress
             ]
         )
@@ -180,10 +183,14 @@ class GameAccessor(BaseAccessor):
             and_(
                 GameSessionModel.chat_id == chat_id,
                 GameSessionModel.state == state,
+                GameSessionModel.game_end == None,
             )
         ).options(joinedload(GameSessionModel.game_progress))
 
-        result = (await self.make_get_query(query)).scalars().first()
+        try:
+            result = (await self.make_get_query(query)).scalars().first()
+        except Exception as e:
+            print(e)
 
         if not result:
             return
@@ -207,7 +214,7 @@ class GameAccessor(BaseAccessor):
                     gamer_status=gp.gamer_status,
                     number_of_mistakes=gp.number_of_mistakes,
                     number_of_right_answers=gp.number_of_right_answers,
-                    is_master=gp.is_master,
+                    is_answering=gp.is_answering,
                 ) for gp in result.game_progress
             ]
         )
@@ -215,49 +222,29 @@ class GameAccessor(BaseAccessor):
     async def update_state_gs(self, state: str, id_: int) -> GameSession:
         update_query = update(GameSessionModel) \
             .where(GameSessionModel.id == id_) \
-            .values(state=state).options(joinedload(GameSessionModel.game_progress))
-        update_gs = (await self.make_update_query(update_query)).scalars().first()
-        return GameSession(
-            id=update_gs.id,
-            chat_id=update_gs.chat_id,
-            game_start=update_gs.game_start,
-            game_end=update_gs.game_end,
-            state=update_gs.state,
-            theme_id=update_gs.theme_id,
-            time_for_game=update_gs.time_for_game,
-            time_for_answer=update_gs.time_for_answer,
-            id_game_master=update_gs.id_game_master,
-            game_progress=[
-                GameProgress(
-                    id_gamer=gp.id_gamer,
-                    difficulty_level=gp.difficulty_level,
-                    gamer_status=gp.gamer_status,
-                    number_of_mistakes=gp.number_of_mistakes,
-                    number_of_right_answers=gp.number_of_right_answers,
-                    is_master=gp.is_master,
-                ) for gp in update_gs.game_progress
-            ]
-        )
+            .values(state=state)
+        rowcount = await self.make_update_query(update_query)
+        return rowcount
 
-    async def update_gs_timeout(self, chat_id: int, time_for_answer: int) -> GameSession:
+    async def update_gs_timeout(self, chat_id: int, time_for_answer: int) -> int:
         update_query = update(GameSessionModel).where(
             and_(
                 GameSessionModel.chat_id == chat_id,
                 GameSessionModel.state == 'Active',
                 GameSessionModel.game_end == None,
-            )).values(time_for_answer=time_for_answer).options(joinedload(GameSessionModel.game_progress))
-        await self.make_update_query(update_query)
-        return await self.get_gs_by_chat_id(chat_id)
+            )).values(time_for_answer=time_for_answer)
+        rowcount = await self.make_update_query(update_query)
+        return rowcount
 
-    async def update_gs_duration(self, chat_id: int, time_for_game: int) -> GameSession:
+    async def update_gs_duration(self, chat_id: int, time_for_game: int):
         update_query = update(GameSessionModel).where(
             and_(
                 GameSessionModel.chat_id == chat_id,
                 GameSessionModel.state == 'Active',
                 GameSessionModel.game_end == None,
-            )).values(time_for_game=time_for_game).options(joinedload(GameSessionModel.game_progress))
-        await self.make_update_query(update_query)
-        return await self.get_gs_by_chat_id(chat_id)
+            )).values(time_for_game=time_for_game)
+        rowcount = await self.make_update_query(update_query)
+        return rowcount
 
     async def list_game_sessions(self) -> list[GameSession]:
         query = select(GameSessionModel).options(joinedload(GameSessionModel.game_progress))
@@ -285,7 +272,7 @@ class GameAccessor(BaseAccessor):
                     gamer_status=gp.gamer_status,
                     number_of_mistakes=gp.number_of_mistakes,
                     number_of_right_answers=gp.number_of_right_answers,
-                    is_master=gp.is_master
+                    is_answering=gp.is_answering
                 ) for gp in gs.game_progress
             ]
         )
@@ -293,13 +280,13 @@ class GameAccessor(BaseAccessor):
         ]
 
     # Accessor for GameProgressModel (gp) :
-    async def create_game_progress(self, id_gamer: int, id_gamesession: int, is_master: bool = True) -> GameProgress:
-        random_difficulty_level = (random.choice(self.app.config.game.difficulty_levels)).level
+    async def create_game_progress(self, id_gamer: int, id_gamesession: int, is_answering: bool = False) -> GameProgress:
+        random_difficulty_level = random.choice(list(self.app.config.game.difficulty_levels))
         new_gp = GameProgressModel(
             id_gamer=id_gamer,
             difficulty_level=random_difficulty_level,
             id_gamesession=id_gamesession,
-            is_master=is_master,
+            is_answering=is_answering,
         )
         await self.make_add_query(new_gp)
         return GameProgress(
@@ -310,8 +297,13 @@ class GameAccessor(BaseAccessor):
             gamer_status=new_gp.gamer_status,
             number_of_mistakes=new_gp.number_of_mistakes,
             number_of_right_answers=new_gp.number_of_right_answers,
-            is_master=new_gp.is_master,
+            is_answering=new_gp.is_answering,
         )
+
+    async def update_gp_is_answering(self, is_answering: bool, id: int):
+        update_query = update(GameProgressModel).where(GameProgressModel.id == id).values(is_answering=is_answering)
+        rowcount = await self.make_update_query(update_query)
+        return rowcount
 
     async def list_game_progresses(self) -> list[GameProgress]:
         query = select(GameProgressModel)
@@ -329,12 +321,13 @@ class GameAccessor(BaseAccessor):
                 gamer_status=gp.gamer_status,
                 number_of_mistakes=gp.number_of_mistakes,
                 number_of_right_answers=gp.number_of_right_answers,
-                is_master=gp.is_master,
+                is_answering=gp.is_answering,
             ) for gp in result
         ]
 
+    # Extended Queries
     async def get_all_gameinfo(self, chat_id: int):
-        query = select(GameSessionModel) \
+        query = select(GameSessionModel, GameProgressModel, GamerModel) \
             .options(joinedload(GameSessionModel.game_master)) \
             .options(joinedload(GameSessionModel.game_progress) \
                      .options(joinedload(GameProgressModel.gamer))) \
@@ -343,9 +336,8 @@ class GameAccessor(BaseAccessor):
                 GameSessionModel.chat_id == chat_id,
                 GameSessionModel.game_end == None,
             )
-        )
+        ).order_by(GameProgressModel.difficulty_level.desc())
         result = (await self.make_get_query(query)).scalars().first()
-        # return [r for r in result]
 
         if result is None:
             return
@@ -363,7 +355,7 @@ class GameAccessor(BaseAccessor):
             game_master=Gamer(
                 id=result.game_master.id,
                 id_tguser=result.game_master.id_tguser,
-                username=result.game_master.username,
+                first_name=result.game_master.first_name,
                 number_of_defeats=result.game_master.number_of_defeats,
                 number_of_victories=result.game_master.number_of_victories,
             ),
@@ -376,11 +368,11 @@ class GameAccessor(BaseAccessor):
                     gamer_status=gp.gamer_status,
                     number_of_mistakes=gp.number_of_mistakes,
                     number_of_right_answers=gp.number_of_right_answers,
-                    is_master=gp.is_master,
+                    is_answering=gp.is_answering,
                     gamer=Gamer(
                         id=gp.gamer.id,
                         id_tguser=gp.gamer.id_tguser,
-                        username=gp.gamer.username,
+                        first_name=gp.gamer.first_name,
                         number_of_defeats=gp.gamer.number_of_defeats,
                         number_of_victories=gp.gamer.number_of_victories,
                     )
