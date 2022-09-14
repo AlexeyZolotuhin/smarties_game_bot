@@ -1,5 +1,5 @@
 from sqlite3 import IntegrityError
-from aiohttp.web_exceptions import HTTPConflict, HTTPInternalServerError
+from aiohttp.web_exceptions import HTTPConflict, HTTPInternalServerError, HTTPNotFound
 
 from app.game.schemes import RequestPathwaySchema, PathwaySchema, ResponsePathwaySchema, ResponsePathwayListSchema, \
     PathwayListSchema, RequestGamerSchema, ResponseGamerSchema, GamerSchema, ResponseGamerListSchema, GamerListSchema, \
@@ -163,5 +163,7 @@ class GameProgressAddView(View):
             match e.orig.pgcode:
                 case '23505':
                     raise HTTPConflict(text='{"game_progress": ["already exists."]}')
+                case '23503':
+                    raise HTTPNotFound(text='{"game_progress": ["wrong ."]}')
 
         return json_response(data=GameProgressSchema().dump(game_progress))

@@ -120,7 +120,6 @@ class GameAccessor(BaseAccessor):
                                   theme_id=theme_id,
                                   time_for_game=time_for_game,
                                   time_for_answer=time_for_answer,
-                                  game_end=datetime.utcnow() + timedelta(minutes=time_for_game),
                                   )
         await self.make_add_query(new_gs)
         return GameSession(
@@ -236,6 +235,15 @@ class GameAccessor(BaseAccessor):
         await self.make_update_query(update_query)
         return await self.get_gs_by_chat_id(chat_id)
 
+    async def update_gs_duration(self, chat_id: int, time_for_game: int) -> GameSession:
+        update_query = update(GameSessionModel).where(
+            and_(
+                GameSessionModel.chat_id == chat_id,
+                GameSessionModel.state == 'Active',
+            )).values(time_for_game=time_for_game).options(joinedload(GameSessionModel.game_progress))
+        await self.make_update_query(update_query)
+        return await self.get_gs_by_chat_id(chat_id)
+
     async def list_game_sessions(self) -> list[GameSession]:
         query = select(GameSessionModel).options(joinedload(GameSessionModel.game_progress))
         result = (await self.make_get_query(query)).scalars().unique()
@@ -254,7 +262,9 @@ class GameAccessor(BaseAccessor):
             time_for_answer=gs.time_for_answer,
             game_progress=[
                 GameProgress(
+                    id=gp.id,
                     id_gamer=gp.id_gamer,
+                    id_gamesession=gp.id_gamesession,
                     difficulty_level=gp.difficulty_level,
                     gamer_status=gp.gamer_status,
                     number_of_mistakes=gp.number_of_mistakes,

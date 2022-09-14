@@ -68,12 +68,22 @@ class MyChatMember:
     class Meta:
         unknown = EXCLUDE
 
+@dataclass
+class CallbackQuery:
+    id: int
+    from_: MessageFrom = field(metadata={"data_key": "from"})
+    message: Message
+    data: str
+
+    class Meta:
+        unknown = EXCLUDE
 
 @dataclass
 class UpdateObj:
     update_id: int
     message: Optional[Message] = None
     my_chat_member: Optional[MyChatMember] = None
+    callback_query: Optional[CallbackQuery] = None
 
     class Meta:
         unknown = EXCLUDE
