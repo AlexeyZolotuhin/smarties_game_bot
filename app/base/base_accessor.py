@@ -26,7 +26,7 @@ class BaseAccessor:
 
     async def make_add_query(self, new_object):
         async with self.app.database.session() as session:
-            session.add(new_object)
+            await session.add(new_object)
             await session.commit()
 
     async def make_update_query(self, update_query):

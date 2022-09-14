@@ -61,6 +61,21 @@ class TgClient:
                 res_dict = await resp.json()
                 return res_dict
 
+    async def edit_message_text(self, chat_id: int, message_id: int, text: str, reply_markup=None):
+        url = self.get_url("editMessageText")
+        payload = {
+            'chat_id': chat_id,
+            'message_id': message_id,
+            'text': text,
+        }
+        if reply_markup:
+            payload["reply_markup"] = reply_markup.to_json()
+
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, json=payload) as resp:
+                res_dict = await resp.json()
+                return res_dict
+
     async def raw_send_message(self, chat_id: int, text: str,
                                reply_markup=None) -> SendMessageResponse:
         url = self.get_url("sendMessage")
@@ -75,4 +90,3 @@ class TgClient:
             async with session.post(url, json=payload) as resp:
                 res_dict = await resp.json()
                 return res_dict
-

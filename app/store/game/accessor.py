@@ -2,7 +2,7 @@ from app.game.models import Gamer, GamerModel, GameSessionModel, GameSession, Ga
     GameProgress
 from app.base.base_accessor import BaseAccessor
 from sqlalchemy import String, and_, delete, or_, select, distinct, update, insert
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, subqueryload
 from datetime import datetime, timedelta
 import random
 
@@ -106,9 +106,11 @@ class GameAccessor(BaseAccessor):
 
     # Accessor for GameSessionModel (gs):
     async def create_game_session(self, chat_id: int,
+                                  id_game_master: int,
                                   theme_id: int = None,
                                   time_for_game: int = None,
-                                  time_for_answer: int = None, ) -> GameSession:
+                                  time_for_answer: int = None,
+                                  ) -> GameSession:
         if not theme_id:
             theme_id = self.app.config.game.theme_id
         if not time_for_game:
@@ -120,8 +122,15 @@ class GameAccessor(BaseAccessor):
                                   theme_id=theme_id,
                                   time_for_game=time_for_game,
                                   time_for_answer=time_for_answer,
+                                  id_game_master=id_game_master
+                                  # game_end = datetime.utcnow() + timedelta(minutes=20)
                                   )
         await self.make_add_query(new_gs)
+
+        # async with self.app.database.session.begin() as session:
+        #     await session.add(new_gs)
+            # await session.commit()
+
         return GameSession(
             id=new_gs.id,
             chat_id=new_gs.chat_id,
@@ -131,6 +140,7 @@ class GameAccessor(BaseAccessor):
             theme_id=new_gs.theme_id,
             time_for_game=new_gs.time_for_game,
             time_for_answer=new_gs.time_for_answer,
+            id_game_master=new_gs.id_game_master
         )
 
     async def get_gs_by_id(self, id_: int) -> GameSession | None:
@@ -152,6 +162,7 @@ class GameAccessor(BaseAccessor):
             theme_id=result.theme_id,
             time_for_game=result.time_for_game,
             time_for_answer=result.time_for_answer,
+            id_game_master=result.id_game_master,
             game_progress=[
                 GameProgress(
                     id_gamer=gp.id_gamer,
@@ -186,6 +197,7 @@ class GameAccessor(BaseAccessor):
             theme_id=result.theme_id,
             time_for_game=result.time_for_game,
             time_for_answer=result.time_for_answer,
+            id_game_master=result.id_game_master,
             game_progress=[
                 GameProgress(
                     id=gp.id,
@@ -214,6 +226,7 @@ class GameAccessor(BaseAccessor):
             theme_id=update_gs.theme_id,
             time_for_game=update_gs.time_for_game,
             time_for_answer=update_gs.time_for_answer,
+            id_game_master=update_gs.id_game_master,
             game_progress=[
                 GameProgress(
                     id_gamer=gp.id_gamer,
@@ -231,6 +244,7 @@ class GameAccessor(BaseAccessor):
             and_(
                 GameSessionModel.chat_id == chat_id,
                 GameSessionModel.state == 'Active',
+                GameSessionModel.game_end == None,
             )).values(time_for_answer=time_for_answer).options(joinedload(GameSessionModel.game_progress))
         await self.make_update_query(update_query)
         return await self.get_gs_by_chat_id(chat_id)
@@ -240,6 +254,7 @@ class GameAccessor(BaseAccessor):
             and_(
                 GameSessionModel.chat_id == chat_id,
                 GameSessionModel.state == 'Active',
+                GameSessionModel.game_end == None,
             )).values(time_for_game=time_for_game).options(joinedload(GameSessionModel.game_progress))
         await self.make_update_query(update_query)
         return await self.get_gs_by_chat_id(chat_id)
@@ -260,6 +275,7 @@ class GameAccessor(BaseAccessor):
             theme_id=gs.theme_id,
             time_for_game=gs.time_for_game,
             time_for_answer=gs.time_for_answer,
+            id_game_master=gs.id_game_master,
             game_progress=[
                 GameProgress(
                     id=gp.id,
@@ -277,7 +293,7 @@ class GameAccessor(BaseAccessor):
         ]
 
     # Accessor for GameProgressModel (gp) :
-    async def create_game_progress(self, id_gamer: int, id_gamesession: int, is_master: bool = False) -> GameProgress:
+    async def create_game_progress(self, id_gamer: int, id_gamesession: int, is_master: bool = True) -> GameProgress:
         random_difficulty_level = (random.choice(self.app.config.game.difficulty_levels)).level
         new_gp = GameProgressModel(
             id_gamer=id_gamer,
@@ -295,4 +311,79 @@ class GameAccessor(BaseAccessor):
             number_of_mistakes=new_gp.number_of_mistakes,
             number_of_right_answers=new_gp.number_of_right_answers,
             is_master=new_gp.is_master,
+        )
+
+    async def list_game_progresses(self) -> list[GameProgress]:
+        query = select(GameProgressModel)
+        result = (await self.make_get_query(query)).scalars().unique()
+
+        if not result:
+            return []
+
+        return [
+            GameProgress(
+                id=gp.id,
+                id_gamer=gp.id_gamer,
+                id_gamesession=gp.id_gamesession,
+                difficulty_level=gp.difficulty_level,
+                gamer_status=gp.gamer_status,
+                number_of_mistakes=gp.number_of_mistakes,
+                number_of_right_answers=gp.number_of_right_answers,
+                is_master=gp.is_master,
+            ) for gp in result
+        ]
+
+    async def get_all_gameinfo(self, chat_id: int):
+        query = select(GameSessionModel) \
+            .options(joinedload(GameSessionModel.game_master)) \
+            .options(joinedload(GameSessionModel.game_progress) \
+                     .options(joinedload(GameProgressModel.gamer))) \
+            .where(
+            and_(
+                GameSessionModel.chat_id == chat_id,
+                GameSessionModel.game_end == None,
+            )
+        )
+        result = (await self.make_get_query(query)).scalars().first()
+        # return [r for r in result]
+
+        if result is None:
+            return
+
+        return GameSession(
+            id=result.id,
+            chat_id=result.chat_id,
+            id_game_master=result.id_game_master,
+            game_start=result.game_start,
+            game_end=result.game_end,
+            state=result.state,
+            theme_id=result.theme_id,
+            time_for_game=result.time_for_game,
+            time_for_answer=result.time_for_answer,
+            game_master=Gamer(
+                id=result.game_master.id,
+                id_tguser=result.game_master.id_tguser,
+                username=result.game_master.username,
+                number_of_defeats=result.game_master.number_of_defeats,
+                number_of_victories=result.game_master.number_of_victories,
+            ),
+            game_progress=[
+                GameProgress(
+                    id=gp.id,
+                    id_gamer=gp.id_gamer,
+                    id_gamesession=gp.id_gamesession,
+                    difficulty_level=gp.difficulty_level,
+                    gamer_status=gp.gamer_status,
+                    number_of_mistakes=gp.number_of_mistakes,
+                    number_of_right_answers=gp.number_of_right_answers,
+                    is_master=gp.is_master,
+                    gamer=Gamer(
+                        id=gp.gamer.id,
+                        id_tguser=gp.gamer.id_tguser,
+                        username=gp.gamer.username,
+                        number_of_defeats=gp.gamer.number_of_defeats,
+                        number_of_victories=gp.gamer.number_of_victories,
+                    )
+                ) for gp in result.game_progress
+            ]
         )

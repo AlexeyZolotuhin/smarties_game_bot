@@ -9,7 +9,8 @@ from sqlalchemy import (
     VARCHAR,
     ForeignKey,
     BOOLEAN,
-    DateTime
+    DateTime,
+    BIGINT
 )
 
 # model was replaced by config file (app.config.game.difficulty_levels)
@@ -40,6 +41,8 @@ class GameSession:
     theme_id: int  # -1 - without theme
     time_for_game: int  # in minutes
     time_for_answer: int  # in seconds
+    id_game_master: int
+    game_master: Optional[Gamer] = None
     game_progress: Optional[list["GameProgress"]] = None
 
 
@@ -51,8 +54,9 @@ class GameProgress:
     gamer_status: str  # Playing, Winner, Failed
     number_of_mistakes: int
     number_of_right_answers: int
-    is_master: int
+    is_master: bool
     id_gamesession: int
+    gamer: Optional[Gamer] = None
 
 # model was replaced by config file (app.config.game.difficulty_levels)
 # class PathwayModel(db):
@@ -78,12 +82,12 @@ class GameProgress:
 class GamerModel(db):
     __tablename__ = "gamers"
     id = Column(Integer, primary_key=True)
-    id_tguser = Column(Integer, nullable=False, unique=True)
+    id_tguser = Column(BIGINT, nullable=False, unique=True)
     username = Column(VARCHAR(50), nullable=False)
     number_of_defeats = Column(Integer, default=0, nullable=False)
     number_of_victories = Column(Integer, default=0, nullable=False)
     game_progress = relation("GameProgressModel", back_populates="gamer")
-
+    game_session = relation("GameSessionModel", back_populates="game_master")
     def __repr__(self):
         return f"<Gamer(id='{self.id}', id_tguser='{self.id_tguser}', username='{self.username}')>"
 
@@ -91,7 +95,8 @@ class GamerModel(db):
 class GameSessionModel(db):
     __tablename__ = "game_sessions"
     id = Column(Integer, primary_key=True)
-    chat_id = Column(Integer, nullable=False)
+    chat_id = Column(BIGINT, nullable=False)
+    id_game_master = Column(Integer, ForeignKey("gamers.id"), nullable=False)
     game_start = Column(DateTime, default=datetime.utcnow)
     game_end = Column(DateTime)
     state = Column(VARCHAR(15), default='Active')  # Active, Ended, Interrupted
@@ -99,6 +104,7 @@ class GameSessionModel(db):
     time_for_game = Column(Integer, default=5)  # in minutes
     time_for_answer = Column(Integer, default=15)  # in seconds
     game_progress = relation("GameProgressModel", back_populates="game_session")
+    game_master = relation("GamerModel", back_populates="game_session")
 
     def __repr__(self):
         return f"<GameSession(id='{self.id}', chat_id='{self.chat_id}', state='{self.state}')>"

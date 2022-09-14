@@ -58,36 +58,6 @@ class ResponseGamerListSchema(OkResponseSchema):
     data = fields.Nested(GamerListSchema)
 
 
-class RequestChatIdSchema(Schema):
-    chat_id = fields.Int(required=True)
-
-
-class RequestTimeOutSchema(RequestChatIdSchema):
-    time_for_answer = fields.Int(required=True)
-
-
-class GameSessionSchema(RequestChatIdSchema):
-    id = fields.Int(required=False)
-    game_start = fields.DateTime(required=True)
-    game_end = fields.DateTime(required=True)
-    state = fields.Str(required=True)  # Active, Ended, Interrupted
-    theme_id = fields.Int(required=True)  # -1 - without theme
-    time_for_game = fields.Int(required=True)  # in minutes
-    time_for_answer = fields.Int(required=True)  # in seconds
-
-
-class ResponseGameSessionSchema(OkResponseSchema):
-    data = fields.Nested(GameSessionSchema)
-
-
-class GameSessionListSchema(Schema):
-    game_sessions = fields.Nested(GameSessionSchema, many=True)
-
-
-class ResponseGameSessionListSchema(OkResponseSchema):
-    data = fields.Nested(GameSessionListSchema)
-
-
 class RequestGameProgressSchema(Schema):
     id_gamer = fields.Int(required=True)
     id_gamesession = fields.Int(required=True)
@@ -108,8 +78,40 @@ class ResponseGameProgressSchema(OkResponseSchema):
 
 
 class GameProgressListSchema(Schema):
-    game_progresses = fields.Nested(GameProgressSchema)
+    game_progresses = fields.Nested(GameProgressSchema, many=True)
 
 
-class ResponseGameListProgressSchema(OkResponseSchema):
+class ResponseGameProgressListSchema(OkResponseSchema):
     data = fields.Nested(GameProgressListSchema)
+
+
+class RequestChatIdSchema(Schema):
+    chat_id = fields.Int(required=True)
+    id_game_master = fields.Int(required=False)
+
+
+class RequestTimeOutSchema(RequestChatIdSchema):
+    time_for_answer = fields.Int(required=True)
+
+
+class GameSessionSchema(RequestChatIdSchema):
+    id = fields.Int(required=False)
+    game_start = fields.DateTime(required=True)
+    game_end = fields.DateTime(required=True)
+    state = fields.Str(required=True)  # Active, Ended, Interrupted
+    theme_id = fields.Int(required=True)  # -1 - without theme
+    time_for_game = fields.Int(required=True)  # in minutes
+    time_for_answer = fields.Int(required=True)  # in seconds
+    game_progress = fields.Nested(GameProgressSchema, many=True)
+
+
+class ResponseGameSessionSchema(OkResponseSchema):
+    data = fields.Nested(GameSessionSchema)
+
+
+class GameSessionListSchema(Schema):
+    game_sessions = fields.Nested(GameSessionSchema, many=True)
+
+
+class ResponseGameSessionListSchema(OkResponseSchema):
+    data = fields.Nested(GameSessionListSchema)

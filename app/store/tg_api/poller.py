@@ -17,11 +17,13 @@ class Poller:
         while self.is_running:
             try:
                 res = await self.tg_client.get_updates_in_objects(offset=offset, timeout=15)
+                print(res)
             except ClientOSError:
                 continue
             for update in res.result:  # ["result"]:
-                offset = update.update_id + 1  # ["update_id"] + 1
+                offset = update.update_id + 1  #update["update_id"] + 1
                 self.queue.put_nowait(update)
+
 
     async def start(self):
         self.is_running = True

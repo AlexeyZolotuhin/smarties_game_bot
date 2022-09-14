@@ -1,6 +1,7 @@
 import datetime
 import typing
 
+from app.game.models import GameSession
 from app.store.tg_api.api import TgClient
 from app.store.tg_api.dataclasses import UpdateObj
 from telegram import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
@@ -43,44 +44,86 @@ class BotManager:
                 case "left":
                     print("left from chat")
                     # TODO завершить игровую сессию: изменить статус игровой сессии и проставить статы в игр. прогрессе
+
         if upd.callback_query is not None:
             chat_id = upd.callback_query.message.chat.id
             tg_user_id = upd.callback_query.from_.id
             user_name = upd.callback_query.from_.username
             text_msg = upd.callback_query.message.text
             data = upd.callback_query.data
-
+            message_id = upd.callback_query.message.message_id
 
             if data == "/start":
                 await self.start_game(chat_id=chat_id, tg_user_id=tg_user_id, user_name=user_name)
-                await self.tg_client.delete_message(chat_id, upd.callback_query.message.message_id)
+                # await self.tg_client.delete_message(chat_id, message_id)
+                text = f"Что ж...начнем)"
+                edit_m = await self.tg_client.edit_message_text(chat_id=chat_id, message_id=message_id, text=text)
+
+            game_info: GameSession = await self.app.store.game.get_all_gameinfo(chat_id=chat_id)
 
             if "Укажите игровое время" in text_msg:
+                if game_info.game_master.id_tguser == tg_user_id:
+                    if int(data) != self.app.config.game.time_for_game:
+                        try:
+                            await self.app.store.game.update_gs_duration(chat_id=chat_id, time_for_game=int(data))
+                        except IntegrityError as e:
+                            pass
 
-                if int(data) != self.app.config.game.time_for_game:
+                    text = f"Установленое игровое время: {data} минут"
+                    edit_m = await self.tg_client.edit_message_text(chat_id=chat_id, message_id=message_id, text=text)
+
+                    text = f"Укажите время на ответ"
+                    time_for_answer_btn = [InlineKeyboardButton("10 с", callback_data=10),
+                                           InlineKeyboardButton("15 с", callback_data=15),
+                                           InlineKeyboardButton("30 с", callback_data=30)]
+
+                    inline = InlineKeyboardMarkup(inline_keyboard=[time_for_answer_btn])
+                    answer = await self.tg_client.raw_send_message(chat_id=chat_id, text=text, reply_markup=inline)
+
+                else:
+                    war_text = f"Ая-я-яй {user_name}! Настройки должен делать game-master {game_info.game_master.username}"
+                    await self.tg_client.send_message(chat_id=chat_id, text=war_text)
+
+            if "Укажите время на ответ" in text_msg:
+                if int(data) != self.app.config.game.time_for_answer:
                     try:
-                        await self.app.store.game.update_gs_duration(chat_id=chat_id, time_for_game=int(data))
+                        await self.app.store.game.update_gs_timeout(chat_id=chat_id, time_for_answer=int(data))
                     except IntegrityError as e:
                         pass
 
-                text = f" Укажите время на ответ"
-                time_for_answer_btn = [InlineKeyboardButton("10 с", callback_data=10),
-                                       InlineKeyboardButton("15 с", callback_data=15),
-                                       InlineKeyboardButton("30 с", callback_data=30)]
+                    text = f"Установленое время на ответ: {data} секунд"
+                    edit_m = await self.tg_client.edit_message_text(chat_id=chat_id, message_id=message_id,
+                                                                    text=text)
 
-                inline = InlineKeyboardMarkup(inline_keyboard=[time_for_answer_btn])
-                answer = await self.tg_client.raw_send_message(chat_id=chat_id, text=text, reply_markup=inline)
+                    text = f"Кто хочет принять учатие в игре нажмите: Я хочу.\n" \
+                           f"Когда все определятся, пусть {game_info.game_master.username} нажмет: Мы готовы"
 
+                    who_play_btn = [InlineKeyboardButton("Я хочу", callback_data="Iwant"),
+                                    InlineKeyboardButton("Не хочется", callback_data="Nope"),
+                                    InlineKeyboardButton("Мы готовы", callback_data="WeReady")]
 
+                    inline = InlineKeyboardMarkup(inline_keyboard=[who_play_btn])
+                    answer = await self.tg_client.raw_send_message(chat_id=chat_id, text=text, reply_markup=inline)
 
+            if "Кто хочет принять учатие" in text_msg:
+                if data == "Iwant":
+                    if tg_user_id not in [g.gamer.id_tguser for g in game_info.game_progress]:
+                        try:
+                            gamer = await self.app.store.game.create_gamer(tg_user_id, user_name)
+                        except IntegrityError as e:
+                            match e.orig.pgcode:
+                                case '23505':
+                                    gamer = await self.app.store.game.get_gamer_by_id_tguser(tg_user_id)
+                        gp = await self.app.store.game.create_game_progress(gamer.id, game_info.id)
+                    else:
+                        text = f"{user_name} не беспокойтесь, вы уже добавлены в игру!"
+                        answer = await self.tg_client.raw_send_message(chat_id=chat_id, text=text)
 
         if upd.message.text == '/start':
             chat_id = upd.message.chat.id
             tg_user_id = upd.message.from_.id
             user_name = upd.message.from_.username
             await self.start_game(chat_id=chat_id, tg_user_id=tg_user_id, user_name=user_name)
-
-
 
     async def start_game(self, chat_id: int, tg_user_id: int, user_name: str):
         # проверяем есть ли активная игра в данном чате
@@ -100,7 +143,7 @@ class BotManager:
                     case '23505':
                         gamer = await self.app.store.game.get_gamer_by_id_tguser(tg_user_id)
             # создание GameSession & GameProgress
-            gs = await self.app.store.game.create_game_session(chat_id=chat_id)
+            gs = await self.app.store.game.create_game_session(chat_id=chat_id, id_game_master=gamer.id)
             gp = await self.app.store.game.create_game_progress(gamer.id, gs.id, is_master=True)
             # просим указать сколько минут продлиться игра, а также назначенного game-master_а
             text = f"Пользователь {user_name} теперь game-master. Ему предстоит сделать пару настроек." \

@@ -5,7 +5,8 @@ from app.game.schemes import RequestPathwaySchema, PathwaySchema, ResponsePathwa
     PathwayListSchema, RequestGamerSchema, ResponseGamerSchema, GamerSchema, ResponseGamerListSchema, GamerListSchema, \
     UpdateVictoriesGamerSchema, UpdateDefeatsGamerSchema, RequestChatIdSchema, ResponseGameSessionSchema, \
     GameSessionSchema, RequestTimeOutSchema, ResponseGameSessionListSchema, GameSessionListSchema, \
-    RequestGameProgressSchema, ResponseGameProgressSchema, GameProgressSchema
+    RequestGameProgressSchema, ResponseGameProgressSchema, GameProgressSchema, ResponseGameProgressListSchema, \
+    GameProgressListSchema
 from app.web.app import View
 from app.web.decorators import require_auth
 from app.web.utils import json_response
@@ -105,7 +106,7 @@ class GameSessionAddView(View):
     async def post(self):
         data = self.request["data"]
         try:
-            game_session = await self.store.game.create_game_session(data["chat_id"])
+            game_session = await self.store.game.create_game_session(data["chat_id"], data["id_game_master"])
         except IntegrityError as e:
             match e.orig.pgcode:
                 case '23505':
@@ -116,7 +117,7 @@ class GameSessionAddView(View):
 
 class GameSessionListView(View):
     @docs(tags=["Smarties game bot"], summary="GameSessionListView", description="Get list all game sessions")
-    @response_schema(ResponseGameSessionListSchema)
+    # @response_schema(ResponseGameSessionListSchema)
     @require_auth
     async def get(self):
         game_sessions = await self.store.game.list_game_sessions()
@@ -167,3 +168,25 @@ class GameProgressAddView(View):
                     raise HTTPNotFound(text='{"game_progress": ["wrong ."]}')
 
         return json_response(data=GameProgressSchema().dump(game_progress))
+
+
+class GameProgressListView(View):
+    @docs(tags=["Smarties game bot"], summary="GameProgressListView", description="Get list all game progresses")
+    @response_schema(ResponseGameProgressListSchema)
+    @require_auth
+    async def get(self):
+        game_progresses = await self.store.game.list_game_progresses()
+        return json_response(data=GameProgressListSchema().dump({"game_progresses": game_progresses}))
+
+
+class AllGameInfoView(View):
+    # @docs(tags=["Smarties game bot"], summary="GameSessionAddView", description="Add new game session")
+    @request_schema(RequestChatIdSchema)
+    # @response_schema(ResponseGameSessionSchema, 200)
+    @require_auth
+    async def get(self):
+        data = self.request["data"]
+        result = await self.store.game.get_all_gameinfo(data["chat_id"])
+        print(result)
+
+        # return json_response(data=GameSessionSchema().dump(game_session))
