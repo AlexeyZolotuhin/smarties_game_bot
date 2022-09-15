@@ -246,6 +246,16 @@ class GameAccessor(BaseAccessor):
         rowcount = await self.make_update_query(update_query)
         return rowcount
 
+    async def update_gs_start_time(self, game_start: datetime, id: int):
+        update_query = update(GameSessionModel).where(GameSessionModel.id == id).values(game_start=game_start)
+        rowcount = await self.make_update_query(update_query)
+        return rowcount
+
+    async def update_gs_end_time(self, game_end: datetime, id: int):
+        update_query = update(GameSessionModel).where(GameSessionModel.id == id).values(game_end=game_end)
+        rowcount = await self.make_update_query(update_query)
+        return rowcount
+
     async def list_game_sessions(self) -> list[GameSession]:
         query = select(GameSessionModel).options(joinedload(GameSessionModel.game_progress))
         result = (await self.make_get_query(query)).scalars().unique()
@@ -280,7 +290,8 @@ class GameAccessor(BaseAccessor):
         ]
 
     # Accessor for GameProgressModel (gp) :
-    async def create_game_progress(self, id_gamer: int, id_gamesession: int, is_answering: bool = False) -> GameProgress:
+    async def create_game_progress(self, id_gamer: int, id_gamesession: int,
+                                   is_answering: bool = False) -> GameProgress:
         random_difficulty_level = random.choice(list(self.app.config.game.difficulty_levels))
         new_gp = GameProgressModel(
             id_gamer=id_gamer,

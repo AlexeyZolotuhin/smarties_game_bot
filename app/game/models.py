@@ -98,7 +98,7 @@ class GameSessionModel(db):
     id = Column(Integer, primary_key=True)
     chat_id = Column(BIGINT, nullable=False)
     id_game_master = Column(Integer, ForeignKey("gamers.id"), nullable=False)
-    game_start = Column(DateTime, default=datetime.utcnow)
+    game_start = Column(DateTime)
     game_end = Column(DateTime)
     state = Column(VARCHAR(15), default='Active')  # Active, Ended, Interrupted
     theme_id = Column(Integer, default=-1)  # -1 without theme, random any question
@@ -107,7 +107,6 @@ class GameSessionModel(db):
 
     game_progress = relation("GameProgressModel", back_populates="game_session")
     game_master = relation("GamerModel", back_populates="game_session")
-    relation
 
     def __repr__(self):
         return f"<GameSession(id='{self.id}', chat_id='{self.chat_id}', state='{self.state}')>"

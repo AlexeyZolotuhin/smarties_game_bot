@@ -9,3 +9,6 @@ venv.bak/
 
 # ide
 .idea
+
+#alembic
+alembic*
