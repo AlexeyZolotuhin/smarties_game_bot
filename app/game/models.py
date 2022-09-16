@@ -37,7 +37,7 @@ class GameSession:
     chat_id: int
     game_start: datetime
     game_end: datetime
-    state: str  # Active, Ended, Interrupted
+    state: str  # Active, Ended, Interrupted, All_failed
     theme_id: int  # -1 - without theme
     time_for_game: int  # in minutes
     time_for_answer: int  # in seconds

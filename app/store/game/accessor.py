@@ -311,15 +311,63 @@ class GameAccessor(BaseAccessor):
             is_answering=new_gp.is_answering,
         )
 
-    async def update_gp_is_answering(self, is_answering: bool, id: int):
-        update_query = update(GameProgressModel).where(GameProgressModel.id == id).values(is_answering=is_answering)
+    async def update_gp_is_answering(self, id_: int, is_answering: bool):
+        update_query = update(GameProgressModel).where(GameProgressModel.id == id_).values(is_answering=is_answering)
+        try:
+            rowcount = await self.make_update_query(update_query)
+        except Exception as e:
+            print(e)
+        return rowcount
+
+    async def update_gp_number_of_mistakes(self, id_: int, number_of_mistakes: int):
+        update_query = update(GameProgressModel).where(GameProgressModel.id == id_).values(
+            number_of_mistakes=number_of_mistakes)
         rowcount = await self.make_update_query(update_query)
         return rowcount
 
-    async def update_gp_number_of_mistakes(self, : bool, id: int):
-        update_query = update(GameProgressModel).where(GameProgressModel.id == id).values(is_answering=is_answering)
+    async def update_gp_number_of_rigth_answers(self, id_: int, number_of_right_answers: int):
+        update_query = update(GameProgressModel).where(GameProgressModel.id == id_).values(
+            number_of_right_answers=number_of_right_answers)
         rowcount = await self.make_update_query(update_query)
         return rowcount
+
+    async def update_gp_gamer_status(self, id_: int, gamer_status: str):
+        update_query = update(GameProgressModel).where(GameProgressModel.id == id_).values(
+            gamer_status=gamer_status)
+        rowcount = await self.make_update_query(update_query)
+        return rowcount
+
+    async def get_gp_by_id_gs(self, id_gs: int, gamer_status: str = None) -> list[GameProgress]:
+        query = select(GameProgressModel).options(joinedload(GameProgressModel.gamer))
+        if gamer_status:
+            query = query.where(GameProgressModel.id_gamesession == id_gs)
+        else:
+            query = query.where(
+                and_(
+                    GameProgressModel.id_gamesession == id_gs,
+                    GameProgressModel.igamer_status == gamer_status, )
+            )
+
+        res = (await self.make_get_query(query)).scalars().unique()
+        return [
+            GameProgress(
+                id=gp.id,
+                id_gamer=gp.id_gamer,
+                difficulty_level=gp.difficulty_level,
+                gamer_status=gp.gamer_status,
+                number_of_mistakes=gp.number_of_mistakes,
+                number_of_right_answers=gp.number_of_right_answers,
+                is_answering=gp.is_answering,
+                id_gamesession=gp.id_gamesession,
+                gamer=Gamer(
+                    id=gp.gamer.id,
+                    id_tguser=gp.gamer.id_tguser,
+                    first_name=gp.gamer.first_name,
+                    number_of_defeats=gp.gamer.number_of_defeats,
+                    number_of_victories=gp.gamer.number_of_victories,
+                )
+            ) for gp in res
+        ]
 
     async def list_game_progresses(self) -> list[GameProgress]:
         query = select(GameProgressModel)

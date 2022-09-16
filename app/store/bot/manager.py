@@ -17,6 +17,7 @@ class BotManager:
     def __init__(self, app: "Application"):
         self.app = app
         self.tg_client = TgClient(app.config.bot.access_token)
+        # TODO ограничить использование переменных таймера, обработчик то один
         self.game_start = 0
         self.planning_end_time = 0
         self.time_for_game = 0  # app.config.game.time_for_game
@@ -139,10 +140,13 @@ class BotManager:
                         answer = await self.tg_client.raw_send_message(chat_id=chat_id, text=text)
                 if data == "WeReady":
                     if game_info.game_master.id_tguser == tg_user_id:
-                        res = await self.app.store.game.update_gp_is_answering(
-                            is_answering=True,
-                            id=game_info.game_progress[0].id
-                        )
+                        try:
+                            res = await self.app.store.game.update_gp_is_answering(
+                                is_answering=True,
+                                id_=game_info.game_progress[0].id
+                            )
+                        except Exception as e:
+                            print(e)
 
                         dl = self.app.config.game.difficulty_levels
                         g_str = [f"{gp.gamer.first_name} - {dl[gp.difficulty_level].color}"
@@ -165,45 +169,87 @@ class BotManager:
                         war_text = f"Ая-я-яй {first_name}! Настройки должен делать game-master {game_info.game_master.first_name}"
                         await self.tg_client.send_message(chat_id=chat_id, text=war_text)
             elif "Каждому игроку случайным образом" in text_msg:
-                if data == "Go":
-                    await self.start_game_timer(game_info.id, game_info.time_for_game, game_info.time_for_answer)
+                if game_info.game_master.id_tguser == tg_user_id:
+                    if data == "Go":
+                        await self.start_game_timer(game_info.id, game_info.time_for_game, game_info.time_for_answer)
 
-                    dl = self.app.config.game.difficulty_levels
-                    g_str = [f"{gp.gamer.first_name} - {dl[gp.difficulty_level].color}"
-                             for gp in game_info.game_progress]
+                        dl = self.app.config.game.difficulty_levels
+                        g_str = [f"{gp.gamer.first_name} - {dl[gp.difficulty_level].color}"
+                                 for gp in game_info.game_progress]
 
-                    text = f"1 - Зеленая дорожа: 4 вопроса, 2 права на ошибку \n" \
-                           f"2 - Желтая дорожка: 3 вопроса, 1 право на ошибку \n" \
-                           f"3 - Красная дорожка: 2 вопроса, ошибаться нельзя \n" \
-                           f"Побеждает тот, кто первый ответит на 2 вопроса \n\n" \
-                           f"Вопросы будут задаваться в следующем порядке: \n" \
-                           + '\n'.join(g_str)
+                        text = f"1 - Зеленая дорожа: 4 вопроса, 2 права на ошибку \n" \
+                               f"2 - Желтая дорожка: 3 вопроса, 1 право на ошибку \n" \
+                               f"3 - Красная дорожка: 2 вопроса, ошибаться нельзя \n" \
+                               f"Побеждает тот, кто первый ответит на 2 вопроса \n\n" \
+                               f"Вопросы будут задаваться в следующем порядке: \n" \
+                               + '\n'.join(g_str)
 
-                    edit_m = await self.tg_client.edit_message_text(chat_id=chat_id, message_id=message_id, text=text)
+                        # edit_m = await self.tg_client.edit_message_text(chat_id=chat_id, message_id=message_id,
+                        #                                               text=text)
 
-                answering_gamer = await self.get_answering_gamer(game_info.game_progress)
-                text, inline = await self.make_question(answering_gamer, chat_id)
-                res = await self.tg_client.raw_send_message(chat_id=chat_id, text=text, reply_markup=inline)
-                await asyncio.sleep(game_info.time_for_answer)
-                if res["result"]["message_id"] not in self.answered_mes.get(chat_id, []):
-                    await self.tg_client.raw_send_message(chat_id=chat_id, text=f"Время вышло {res['result']['message_id']}")
-                # TODO delete from list answered messages
+                    answering_gp = await self.get_answering_gp(game_info.game_progress)
+
+                    text, inline = await self.make_question(answering_gp.gamer)
+                    res = await self.tg_client.raw_send_message(chat_id=chat_id, text=text, reply_markup=inline)
+                    await asyncio.sleep(game_info.time_for_answer)
+                    if res["result"]["message_id"] not in self.answered_mes.get(chat_id, []):
+                        await self.tg_client.raw_send_message(chat_id=chat_id,
+                                                              text=f"Время вышло {res['result']['message_id']}")
+
+                    # TODO delete from list answered messages
+                else:
+                    war_text = f"Ая-я-яй {first_name}! Настройки должен делать game-master {game_info.game_master.first_name}"
+                    await self.tg_client.send_message(chat_id=chat_id, text=war_text)
 
             elif "Вопрос" in text_msg:
-                if chat_id in self.answered_mes:
-                    self.answered_mes[chat_id].append(message_id)
+                is_game_stopped = False
+                answering_gp = await self.get_answering_gp(game_info.game_progress)
+
+                if answering_gp.gamer.id_tguser == tg_user_id:
+                    if chat_id in self.answered_mes:
+                        self.answered_mes[chat_id].append(message_id)
+                    else:
+                        self.answered_mes[chat_id] = [message_id]
+
+                    if data == "False":
+
+                        text = text_msg + f"\n Ответ неверный"
+                        edit_m = await self.tg_client.edit_message_text(chat_id=chat_id, message_id=message_id,
+                                                                        text=text)
+
+                        new_number_of_mistakes = answering_gp.number_of_mistakes + 1
+                        await self.app.store.game.update_gp_number_of_mistakes(id_=answering_gp.id,
+                                                                               number_of_mistakes=new_number_of_mistakes)
+                        # TODO верни таблицу Pathway!
+                        # TODO Добавь в config возможные статы игроков и игровой сессии
+                        if new_number_of_mistakes > self.app.config.game.difficulty_levels[
+                            answering_gp.difficulty_level].max_mistakes:
+                            gp = await self.app.store.game.update_gp_gamer_status(id_=answering_gp.id,
+                                                                                  gamer_status="Failed")
+                            try:
+                                list_failed_gamers = await self.app.store.game.get_gp_by_id_gs(id_gs=game_info.id,
+                                                                                               gamer_status="Failed")
+                            except Exception as e:
+                                print(e)
+
+                            # проверяем остался ли кто-нибудь кто еще не проиграл
+                            if len(game_info.game_progress) == len(list_failed_gamers):
+                                await self.stop_game(state="All_failed")
+                                is_game_stopped = True
+
+                    if not is_game_stopped:
+                        text, inline = await self.make_question(answering_gp.gamer)
+                        await self.hand_over_answering_flag(current_ans_gp=answering_gp,
+                                                            list_gp=game_info.game_progress)
+                        res = await self.tg_client.raw_send_message(chat_id=chat_id, text=text, reply_markup=inline)
+                        await asyncio.sleep(game_info.time_for_answer)
+                        if res["result"]["message_id"] not in self.answered_mes.get(chat_id, []):
+                            await self.tg_client.raw_send_message(chat_id=chat_id,
+                                                                  text=f"Время вышло {res['result']['message_id']}")
                 else:
-                    self.answered_mes[chat_id] = [message_id]
+                    war_text = f"Ая-я-яй {first_name}! Ваша очередь еще не настала."
+                    await self.tg_client.send_message(chat_id=chat_id, text=war_text)
 
-                if data == "False":
-                    await self.app.store.game.u
-
-                answering_gamer = await self.get_answering_gamer(game_info.game_progress)
-                text, inline = await self.make_question(answering_gamer, chat_id)
-                res = await self.tg_client.raw_send_message(chat_id=chat_id, text=text, reply_markup=inline)
-                await asyncio.sleep(game_info.time_for_answer)
-                if res["result"]["message_id"] not in self.answered_mes.get(chat_id, []):
-                    await self.tg_client.raw_send_message(chat_id=chat_id, text=f"Время вышло {res['result']['message_id']}")
 
 
         elif upd.message:
@@ -245,21 +291,36 @@ class BotManager:
             inline = InlineKeyboardMarkup(inline_keyboard=[time_for_game_btn])
             answer = await self.tg_client.raw_send_message(chat_id=chat_id, text=text, reply_markup=inline)
 
-    async def get_answering_gamer(self, game_progresses: list[GameProgress]) -> Gamer | None:
-        gamer = None
-        for i in range(len(game_progresses) + 1):
-            if game_progresses[i].is_answering:
-                gamer = game_progresses[i].gamer
-                try:
-                    await self.app.store.game.update_gp_is_answering(is_answering=False, id=game_progresses[i].id)
-                    if i+1 < len(game_progresses):
-                        await self.app.store.game.update_gp_is_answering(is_answering=True, id=game_progresses[i + 1].id)
-                    else:
-                        await self.app.store.game.update_gp_is_answering(is_answering=True, id=game_progresses[0].id)
-                    break
-                except Exception as e:
-                    print(e)
-        return gamer
+    async def stop_game(self, state: str):
+        # TODO здесь завершаем игровую сессию
+        print(f"Stop game: {state}")
+
+    async def get_answering_gp(self, game_progresses: list[GameProgress]) -> GameProgress:
+        answering_gp = None
+        for gp in game_progresses:
+            if gp.is_answering:
+                answering_gp = gp
+                break
+        return answering_gp
+
+    async def hand_over_answering_flag(self, current_ans_gp: GameProgress, list_gp: list[GameProgress]):
+        cur_index = list_gp.index(current_ans_gp)
+        rowcount = 0  # если нашли следуюего игрока в очереди то = 1
+        # Ищем следующего в очереди и проставляем флаг отвечающего ему
+        for i in range(cur_index, len(list_gp)):
+            if i + 1 < len(list_gp) and list_gp[i + 1].gamer_status == "Playing":
+                rowcount = await self.app.store.game.update_gp_is_answering(id_=list_gp[i + 1].id,
+                                                                            is_answering=True, )
+            elif list_gp[0].gamer_status == "Playing":
+                rowcount = await self.app.store.game.update_gp_is_answering(id_=list_gp[0].id,
+                                                                            is_answering=True,
+                                                                            )
+
+        # Сбрасываем флаг текущего отвечающего игрока если установили флаг следующему в очереди
+        # В случае если нет таковых (все в состоянии Failed) то возвращаю текущего отвечающего
+        # и флаг не сбрасывается
+        if rowcount != 0:
+            await self.app.store.game.update_gp_is_answering(id_=cur_index.id, is_answering=False)
 
     async def start_game_timer(self, id_session: int, time_for_game: int, time_for_answer: int):
         self.game_start = datetime.utcnow()
@@ -275,7 +336,7 @@ class BotManager:
             print(e)
         return rowcount
 
-    async def make_question(self, answering_gamer: Gamer, chat_id: int):
+    async def make_question(self, answering_gamer: Gamer):
         questions = await self.app.store.quizzes.list_questions()
         if questions:
             random_q = random.choice(questions)
@@ -285,4 +346,3 @@ class BotManager:
             text = f"Вопрос для {answering_gamer.first_name}: \n" \
                    f"{random_q.title}"
             return text, inline
-
