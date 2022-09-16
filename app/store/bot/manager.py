@@ -21,7 +21,7 @@ class BotManager:
         self.planning_end_time = 0
         self.time_for_game = 0  # app.config.game.time_for_game
         self.time_for_answer = 0  # app.config.game.time_for_answer
-        self.answered_mes = []
+        self.answered_mes = dict()
 
     async def handle_update(self, upd: UpdateObj):
         print(upd)
@@ -185,21 +185,24 @@ class BotManager:
                 text, inline = await self.make_question(answering_gamer, chat_id)
                 res = await self.tg_client.raw_send_message(chat_id=chat_id, text=text, reply_markup=inline)
                 await asyncio.sleep(game_info.time_for_answer)
-                if res["result"]["message_id"] not in self.answered_mes:
+                if res["result"]["message_id"] not in self.answered_mes.get(chat_id, []):
                     await self.tg_client.raw_send_message(chat_id=chat_id, text=f"Время вышло {res['result']['message_id']}")
                 # TODO delete from list answered messages
 
             elif "Вопрос" in text_msg:
-                self.answered_mes.append(message_id)
+                if chat_id in self.answered_mes:
+                    self.answered_mes[chat_id].append(message_id)
+                else:
+                    self.answered_mes[chat_id] = [message_id]
 
                 if data == "False":
-                    await self.app.s
+                    await self.app.store.game.u
 
                 answering_gamer = await self.get_answering_gamer(game_info.game_progress)
                 text, inline = await self.make_question(answering_gamer, chat_id)
                 res = await self.tg_client.raw_send_message(chat_id=chat_id, text=text, reply_markup=inline)
                 await asyncio.sleep(game_info.time_for_answer)
-                if res["result"]["message_id"] not in self.answered_mes:
+                if res["result"]["message_id"] not in self.answered_mes.get(chat_id, []):
                     await self.tg_client.raw_send_message(chat_id=chat_id, text=f"Время вышло {res['result']['message_id']}")
 
 

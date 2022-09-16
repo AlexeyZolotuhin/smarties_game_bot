@@ -77,7 +77,7 @@ class TgClient:
                 return res_dict
 
     async def raw_send_message(self, chat_id: int, text: str,
-                               reply_markup=None) -> SendMessageResponse:
+                               reply_markup=None):
         url = self.get_url("sendMessage")
         payload = {
             'chat_id': chat_id,

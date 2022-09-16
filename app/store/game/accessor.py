@@ -316,6 +316,11 @@ class GameAccessor(BaseAccessor):
         rowcount = await self.make_update_query(update_query)
         return rowcount
 
+    async def update_gp_number_of_mistakes(self, : bool, id: int):
+        update_query = update(GameProgressModel).where(GameProgressModel.id == id).values(is_answering=is_answering)
+        rowcount = await self.make_update_query(update_query)
+        return rowcount
+
     async def list_game_progresses(self) -> list[GameProgress]:
         query = select(GameProgressModel)
         result = (await self.make_get_query(query)).scalars().unique()
