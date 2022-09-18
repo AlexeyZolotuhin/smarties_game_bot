@@ -28,6 +28,9 @@ class RequestQuestionSchema(Schema):
     theme_id = fields.Int(required=True)
     answers = fields.Nested("AnswerSchema", many=True, required=True)
 
+class RequestQuestionListSchema(Schema):
+    questions = fields.Nested(RequestQuestionSchema, many=True)
+
 
 class QuestionSchema(RequestQuestionSchema):
     id = fields.Int(required=False)
@@ -42,13 +45,15 @@ class AnswerSchema(Schema):
     is_correct = fields.Bool(required=True)
 
 
-class ThemeIdSchema(Schema):
-    theme_id = fields.Int(required=False)
-
-
 class ListQuestionSchema(Schema):
     questions = fields.Nested(QuestionSchema, many=True)
 
 
 class ResponseListQuestionSchema(OkResponseSchema):
     data = fields.Nested(ListQuestionSchema)
+
+
+
+
+class ThemeIdSchema(Schema):
+    theme_id = fields.Int(required=False)

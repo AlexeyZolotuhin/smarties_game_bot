@@ -1,0 +1,384 @@
+# themes
+{
+  "title": "aiohttp"
+}
+
+#questions
+
+[{
+  "title": "Перечислите available-объекты?",
+  "theme_id": 1,
+  "answers": [
+     {
+       "title": "Task",
+       "is_correct": false
+     },
+     {
+       "title": "Coroutine",
+       "is_correct": false
+     },
+     {
+       "title": "Future",
+       "is_correct": false
+     },
+     {
+       "title": "Все",
+       "is_correct": true
+     }
+   ]
+},
+
+{
+  "title": "Каким методом можно запустить асинхронную фоновую задачу?",
+  "theme_id": 1,
+  "answers": [
+     {
+       "title": "asyncio.run",
+       "is_correct": false
+     },
+     {
+       "title": "loop.run_until_complete",
+       "is_correct": false
+     },
+     {
+       "title": "loop.run_forever",
+       "is_correct": false
+     },
+     {
+       "title": "Всеми перечисленными",
+       "is_correct": true
+     }
+   ]
+},
+
+{
+  "title": "Методы для запуска нескольких короутин?",
+  "theme_id": 1,
+  "answers": [
+     {
+       "title": "Gather",
+       "is_correct": false
+     },
+     {
+       "title": "Wait",
+       "is_correct": false
+     },
+     {
+       "title": "create_task в цикле",
+       "is_correct": false
+     },
+     {
+       "title": "Все перечисленные",
+       "is_correct": true
+     }
+   ]
+},
+
+{
+  "title": "Какое исключение вызывается при отмене Task?",
+  "theme_id": 1,
+  "answers": [
+     {
+       "title": "TypeError",
+       "is_correct": false
+     },
+     {
+       "title": "CancelledError",
+       "is_correct": true
+     },
+     {
+       "title": "IntegrityError",
+       "is_correct": false
+     }
+   ]
+},
+
+{
+  "title": "Как называется примитив синхронизации на основе счетчика?",
+  "theme_id": 1,
+  "answers": [
+     {
+       "title": "Event",
+       "is_correct": false
+     },
+     {
+       "title": "Semaphore",
+       "is_correct": true
+     },
+     {
+       "title": "Lock",
+       "is_correct": false
+     }
+   ]
+},
+
+{
+  "title": "При переходе по ссылке, браузер преобразует домен в?",
+  "theme_id": 1,
+  "answers": [
+     {
+       "title": "IP адрес",
+       "is_correct": true
+     },
+     {
+       "title": "TCP адрес",
+       "is_correct": false
+     },
+     {
+       "title": "TTL",
+       "is_correct": false
+     },
+     {
+       "title": "MAC адрес",
+       "is_correct": false
+     }
+   ]
+},
+
+{
+  "title": "Какое поведение характерно при PUT запросе?",
+  "theme_id": 1,
+  "answers": [
+     {
+       "title": "Получение информации",
+       "is_correct": false
+     },
+     {
+       "title": "Изменение информации",
+       "is_correct": true
+     },
+     {
+       "title": "Создание информации",
+       "is_correct": false
+     }
+   ]
+}
+]
+
+# themes
+{
+  "title": "python"
+}
+
+[{
+  "title": "Что представляет собой переменная в Python?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "Хранилище данных",
+       "is_correct": false
+     },
+     {
+       "title": "И ссылка и хранилище данных",
+       "is_correct": false
+     },
+     {
+       "title": "Ссылка на объект в памяти",
+       "is_correct": true
+     }
+   ]
+},
+
+{
+  "title": "Как называется присваивание вида a = b = c = 0?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "Унитарным присваиванием",
+       "is_correct": false
+     },
+     {
+       "title": "Каскадным присваиванием",
+       "is_correct": true
+     },
+     {
+       "title": "Множественным присваивание",
+       "is_correct": false
+     }
+   ]
+},
+
+{
+  "title": "Различаются ли имена переменных arg, Arg, ARG?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "Нет",
+       "is_correct": false
+     },
+     {
+       "title": "Иногда",
+       "is_correct": false
+     },
+     {
+       "title": "Да",
+       "is_correct": true
+     }
+   ]
+},
+{
+  "title": "Какой тип данных отобразит команда print(type(3.67))?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "float",
+       "is_correct": true
+     },
+     {
+       "title": "int",
+       "is_correct": false
+     },
+     {
+       "title": "str",
+       "is_correct": false
+     }
+   ]
+},
+
+{
+  "title": "Какую команду следует записать, чтобы использовать модуль math в программе?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "math import",
+       "is_correct": false
+     },
+     {
+       "title": "math",
+       "is_correct": false
+     },
+     {
+       "title": "import math",
+       "is_correct": true
+     }
+   ]
+},
+
+{
+  "title": "Выберите команду, которая позволяет сохранять строку, введенную с клавиатуры.",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "d = float(input())",
+       "is_correct": false
+     },
+     {
+       "title": "d = int(input())",
+       "is_correct": false
+     },
+     {
+       "title": "d = input()",
+       "is_correct": true
+     }
+   ]
+},
+
+{
+  "title": "К какому типу данных относятся строки?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "К изменяемым типам",
+       "is_correct": false
+     },
+     {
+       "title": "К обоим, в зависимости от определения строки",
+       "is_correct": false
+     },
+     {
+       "title": "К неизменяемым типам",
+       "is_correct": true
+     }
+   ]
+},
+
+{
+  "title": "Что возвратит метод String.index, если указанный фрагмент не будет найден в строке?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "Ошибка ValueError",
+       "is_correct": true
+     },
+     {
+       "title": "Значение 0",
+       "is_correct": false
+     },
+     {
+       "title": "Значение None",
+       "is_correct": false
+     }
+   ]
+},
+
+{
+  "title": "Что возвратит метод String.find, если указанный фрагмент не будет найден в строке?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "значение -1",
+       "is_correct": true
+     },
+     {
+       "title": "Значение 0",
+       "is_correct": false
+     },
+     {
+       "title": "Значение None",
+       "is_correct": false
+     }
+   ]
+},
+
+{
+  "title": "К каким типам данных относится список?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "К изменяемым",
+       "is_correct": true
+     },
+     {
+       "title": "К неизменяемым",
+       "is_correct": false
+     },
+     {
+       "title": "И к тем и к тем",
+       "is_correct": false
+     }
+   ]
+},
+
+{
+  "title": "Какой результат сравнения будет получен при выполнении команды: [1, 2, 3] > [1, 1, 10]",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "False",
+       "is_correct": false
+     },
+     {
+       "title": "True",
+       "is_correct": true
+     }
+   ]
+},
+
+{
+  "title": "Что произойдет, когда итератор достигнет конца списка и попытается возвратить следующий элемент?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "Ошибка ValueError",
+       "is_correct": true
+     },
+     {
+       "title": "Ошибка StopIteration",
+       "is_correct": true
+     },
+     {
+       "title": "Переместится на первый элемент",
+       "is_correct": false
+     }
+   ]
+}]

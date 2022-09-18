@@ -11,7 +11,7 @@ from app.quiz.schemes import (
     ThemeIdSchema,
     ThemeListSchema,
     ThemeSchema, ResponseThemeListSchema, ResponseThemeSchema, RequestThemeSchema, RequestQuestionSchema,
-    ResponseQuestionSchema, ResponseListQuestionSchema,
+    ResponseQuestionSchema, ResponseListQuestionSchema, RequestQuestionListSchema,
 )
 
 from app.web.app import View
@@ -77,6 +77,45 @@ class QuestionAddView(View):
                     raise HTTPConflict(text='{"question": ["question already exists."]}')
 
         return json_response(data=QuestionSchema().dump(question))
+
+
+class QuestionListAddView(View):
+    @docs(tags=["Smarties game bot"], summary="QuestionAddView", description="Add new question")
+    @request_schema(RequestQuestionListSchema)
+    @response_schema(ResponseListQuestionSchema)
+    @require_auth
+    async def post(self):
+        questions = self.data["questions"]
+        result = []
+        for q in questions:
+            title = q["title"]
+            theme_id = q["theme_id"]
+            answers = [
+                Answer(
+                    title=a["title"],
+                    is_correct=a["is_correct"],
+                ) for a in q["answers"]
+            ]
+
+            if len(set([a.is_correct for a in answers])) == 1:
+                raise HTTPBadRequest(text='wrong answers')
+
+            try:
+                question = await self.store.quizzes.create_question(
+                    title=title,
+                    theme_id=theme_id,
+                    answers=answers,
+                )
+                result.append(question)
+            except IntegrityError as e:
+                match e.orig.pgcode:
+                    case "23503":
+                        raise HTTPNotFound(text='{"theme_id": ["theme with pointed them_id does not exist."]}')
+                    case "23505":
+                        raise HTTPConflict(text='{"question": ["question already exists."]}')
+
+        data = {"questions": [QuestionSchema().dump(question) for question in result]}
+        return json_response(data=data)
 
 
 class QuestionListView(View):

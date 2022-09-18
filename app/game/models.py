@@ -37,7 +37,7 @@ class GameSession:
     chat_id: int
     game_start: datetime
     game_end: datetime
-    state: str  # Active, Ended, Interrupted, All_failed
+    state: str  # Active, Ended, Interrupted, All_failed, Timeout
     theme_id: int  # -1 - without theme
     time_for_game: int  # in minutes
     time_for_answer: int  # in seconds
@@ -51,7 +51,7 @@ class GameProgress:
     id: int
     id_gamer: int
     difficulty_level: int
-    gamer_status: str  # Playing, Winner, Failed
+    gamer_status: str  # Playing, Winner, Failed, Interrupted
     number_of_mistakes: int
     number_of_right_answers: int
     is_answering: bool
@@ -98,9 +98,9 @@ class GameSessionModel(db):
     id = Column(Integer, primary_key=True)
     chat_id = Column(BIGINT, nullable=False)
     id_game_master = Column(Integer, ForeignKey("gamers.id"), nullable=False)
-    game_start = Column(DateTime)
+    game_start = Column(DateTime,)
     game_end = Column(DateTime)
-    state = Column(VARCHAR(15), default='Active')  # Active, Ended, Interrupted
+    state = Column(VARCHAR(15), default='Active')  # Active, Ended, Interrupted, All_failed
     theme_id = Column(Integer, default=-1)  # -1 without theme, random any question
     time_for_game = Column(Integer, default=5)  # in minutes
     time_for_answer = Column(Integer, default=15)  # in seconds
@@ -120,7 +120,7 @@ class GameProgressModel(db):
     is_answering = Column(BOOLEAN, default=False)
     id_gamesession = Column(Integer, ForeignKey("game_sessions.id", ondelete="CASCADE",
                                                 onupdate="CASCADE"), nullable=False)
-    gamer_status = Column(VARCHAR(15), default="Playing")  # Playing, Winner, Failed
+    gamer_status = Column(VARCHAR(15), default="Playing")  # Playing, Winner, Failed, Interrupted
     number_of_mistakes = Column(Integer, default=0)
     number_of_right_answers = Column(Integer, default=0)
 
