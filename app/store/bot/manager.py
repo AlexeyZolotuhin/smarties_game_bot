@@ -222,7 +222,15 @@ class BotManager:
                         # Получаем все игровые процессы (игроков) в состоянии проигравших и смотрим, остался
                         # кто еще из игроков в играющем  состоянии, если таких нет, то останавливаем игру без победителя
                         text_failed = ""
-                        if new_number_of_mistakes > self.app.config.game.difficulty_levels[
+                        if new_number_of_mistakes + answering_gp.number_of_right_answers == \
+                        self.app.config.game.difficulty_levels[answering_gp.difficulty_level].max_questions:
+
+                            gp = await self.app.store.game.update_gp_gamer_status(id_=answering_gp.id,
+                                                                                  gamer_status="Winner")
+                            is_game_stopped = True
+                            await self.stop_game(state="Ended", game_info=game_info, winner=answering_gp.gamer)
+
+                        elif new_number_of_mistakes > self.app.config.game.difficulty_levels[
                             answering_gp.difficulty_level].max_mistakes:
                             text_failed = f"Игрок {answering_gp.gamer.first_name} выходит из игры. \n" \
                                           f"Ты слишком часто ошибался, бро"
@@ -272,7 +280,8 @@ class BotManager:
 
                         # Проверяем количество правильных ответов.
                         # Если да, то меняем стат игрока на победителя и вызываем остановку игры
-                        if new_number_of_right_answers >= 2:
+                        if new_number_of_right_answers + answering_gp.number_of_mistakes == \
+                                self.app.config.game.difficulty_levels[answering_gp.difficulty_level].max_questions:
                             gp = await self.app.store.game.update_gp_gamer_status(id_=answering_gp.id,
                                                                                   gamer_status="Winner")
                             is_game_stopped = True
@@ -372,7 +381,7 @@ class BotManager:
                            f"Информация по игрокам: \n" \
                            f"{gamers_states}"
 
-                    answer = await self.tg_client.send_message(tg_user_id, text=text)
+                    answer = await self.tg_client.send_message(chat_id, text=text)
                 else:
                     text = f"Нет активной игровой сессии в текущем чате. Для начала игры нажмите СТАРТ"
                     start_btn = [InlineKeyboardButton("СТАРТ", callback_data="/start")]
@@ -389,7 +398,7 @@ class BotManager:
                                      f" поражений - {g.number_of_defeats}" for g in gamers]
                     text = f"Рейтинг игроков: \n\n" + "\n".join(gamers_rating)
 
-                answer = await self.tg_client.send_message(tg_user_id, text=text)
+                answer = await self.tg_client.send_message(chat_id, text=text)
 
     async def start_game(self, chat_id: int, tg_user_id: int, first_name: str):
         # проверяем есть ли активная игра в данном чате

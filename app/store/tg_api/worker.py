@@ -3,8 +3,6 @@ import datetime
 from typing import List
 
 from app.store import Store
-from app.store.tg_api.api import TgClient
-from app.store.tg_api.dataclasses import UpdateObj
 
 
 class Worker:
