@@ -48,7 +48,7 @@ class GameAccessor(BaseAccessor):
                      )
 
     async def list_gamers(self) -> list[Gamer]:
-        query = select(GamerModel).order_by(GamerModel.number_of_victories)
+        query = select(GamerModel).order_by(GamerModel.number_of_victories.desc())
         result = (await self.make_get_query(query)).scalars().unique()
 
         if not result:

@@ -11,7 +11,7 @@ from app.web.utils import json_response
 
 
 class AdminLoginView(View):
-    @docs(tags=["Smarties game bot"], summary="AdminLoginView", description="Login admin-user in app")
+    @docs(tags=["Admin"], summary="AdminLoginView", description="Login admin-user in app")
     @request_schema(RequestAdminSchema)
     @response_schema(ResponseAdminSchema, 200)
     async def post(self):
@@ -28,7 +28,7 @@ class AdminLoginView(View):
 
 
 class AdminCurrentView(View):
-    @docs(tags=["Smarties game bot"], summary="AdminCurrentView", description="Get current admin")
+    @docs(tags=["Admin"], summary="AdminCurrentView", description="Get current admin")
     @response_schema(ResponseAdminSchema, 200)
     @require_auth
     async def get(self):

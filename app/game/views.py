@@ -15,7 +15,7 @@ from sqlalchemy.exc import IntegrityError
 
 
 class PathwayAddView(View):
-    @docs(tags=["Smarties game bot"], summary="PathwayAddView", description="Add new pathway (difficulty level)")
+    @docs(tags=["Game: Pathways"], summary="PathwayAddView", description="Add new pathway (difficulty level)")
     @request_schema(RequestPathwaySchema)
     @response_schema(ResponsePathwaySchema, 200)
     @require_auth
@@ -34,7 +34,7 @@ class PathwayAddView(View):
 
 
 class PathwayListView(View):
-    @docs(tags=["Smarties game bot"], summary="PathwayListView", description="Get list of all pathways")
+    @docs(tags=["Game: Pathways"], summary="PathwayListView", description="Get list of all pathways")
     @response_schema(ResponsePathwayListSchema, 200)
     @require_auth
     async def get(self):
@@ -43,7 +43,7 @@ class PathwayListView(View):
 
 
 class GamerAddView(View):
-    @docs(tags=["Smarties game bot"], summary="GamerAddView", description="Add new gamer")
+    @docs(tags=["Game: Gamers"], summary="GamerAddView", description="Add new gamer")
     @request_schema(RequestGamerSchema)
     @response_schema(ResponseGamerSchema)
     @require_auth
@@ -60,7 +60,7 @@ class GamerAddView(View):
 
 
 class GamerListView(View):
-    @docs(tags=["Smarties game bot"], summary="GamerListView", description="Get list all gamers")
+    @docs(tags=["Game: Gamers"], summary="GamerListView", description="Get list all gamers")
     @response_schema(ResponseGamerListSchema)
     @require_auth
     async def get(self):
@@ -69,8 +69,8 @@ class GamerListView(View):
 
 
 class UpdateGamerVictoriesView(View):
-    @docs(tags=["Smarties game bot"], summary="UpdateGamerVictoriesView",
-          description="Set number of gamer's victories.")
+    @docs(tags=["Game: Gamers"], summary="UpdateGamerVictoriesView",
+          description="Update numbers of gamer's victories.")
     @request_schema(UpdateVictoriesGamerSchema)
     @response_schema(ResponseGamerSchema, 200)
     async def post(self):
@@ -84,8 +84,8 @@ class UpdateGamerVictoriesView(View):
 
 
 class UpdateGamerDefeatsView(View):
-    @docs(tags=["Smarties game bot"], summary="UpdateGamerVictoriesView",
-          description="Set number of gamer's victories.")
+    @docs(tags=["Game: Gamers"], summary="UpdateGamerVictoriesView",
+          description="Update numbers of gamer's victories.")
     @request_schema(UpdateDefeatsGamerSchema)
     @response_schema(ResponseGamerSchema, 200)
     async def post(self):
@@ -99,7 +99,7 @@ class UpdateGamerDefeatsView(View):
 
 
 class GameSessionAddView(View):
-    @docs(tags=["Smarties game bot"], summary="GameSessionAddView", description="Add new game session")
+    @docs(tags=["Game: GameSessions"], summary="GameSessionAddView", description="Add new game session")
     @request_schema(RequestChatIdSchema)
     @response_schema(ResponseGameSessionSchema, 200)
     @require_auth
@@ -116,7 +116,7 @@ class GameSessionAddView(View):
 
 
 class GameSessionListView(View):
-    @docs(tags=["Smarties game bot"], summary="GameSessionListView", description="Get list all game sessions")
+    @docs(tags=["Game: GameSessions"], summary="GameSessionListView", description="Get list all game sessions")
     # @response_schema(ResponseGameSessionListSchema)
     @require_auth
     async def get(self):
@@ -126,7 +126,7 @@ class GameSessionListView(View):
 
 
 class GameSessionByChatIdView(View):
-    @docs(tags=["Smarties game bot"], summary="GameSessionByChatIdView", description="Get active GS by chat_id")
+    @docs(tags=["Game: GameSessions"], summary="GameSessionByChatIdView", description="Get active GS by chat_id")
     @response_schema(ResponseGameSessionListSchema)
     @require_auth
     async def get(self):
@@ -136,8 +136,8 @@ class GameSessionByChatIdView(View):
 
 
 class UpdateGameSessionTimeoutView(View):
-    @docs(tags=["Smarties game bot"], summary="UpdateGameSessionTimeoutView",
-          description="Change time for answer in game session")
+    @docs(tags=["Game: GameSessions"], summary="UpdateGameSessionTimeoutView",
+          description="Update time for answer in game session")
     @request_schema(RequestTimeOutSchema)
     @response_schema(ResponseGameSessionSchema, 200)
     @require_auth
@@ -152,7 +152,7 @@ class UpdateGameSessionTimeoutView(View):
 
 
 class GameProgressAddView(View):
-    @docs(tags=["Smarties game bot"], summary="GameProgressAddView", description="Add new game progress")
+    @docs(tags=["Game: GameProgress"], summary="GameProgressAddView", description="Add new game progress")
     @request_schema(RequestGameProgressSchema)
     @response_schema(ResponseGameProgressSchema, 200)
     @require_auth
@@ -171,22 +171,9 @@ class GameProgressAddView(View):
 
 
 class GameProgressListView(View):
-    @docs(tags=["Smarties game bot"], summary="GameProgressListView", description="Get list all game progresses")
+    @docs(tags=["Game: GameProgress"], summary="GameProgressListView", description="Get list all game progresses")
     @response_schema(ResponseGameProgressListSchema)
     @require_auth
     async def get(self):
         game_progresses = await self.store.game.list_game_progresses()
         return json_response(data=GameProgressListSchema().dump({"game_progresses": game_progresses}))
-
-
-class AllGameInfoView(View):
-    # @docs(tags=["Smarties game bot"], summary="GameSessionAddView", description="Add new game session")
-    @request_schema(RequestChatIdSchema)
-    # @response_schema(ResponseGameSessionSchema, 200)
-    @require_auth
-    async def get(self):
-        data = self.request["data"]
-        result = await self.store.game.get_all_gameinfo(data["chat_id"])
-        print(result)
-
-        # return json_response(data=GameSessionSchema().dump(game_session))

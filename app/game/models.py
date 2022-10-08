@@ -98,7 +98,7 @@ class GameSessionModel(db):
     id = Column(Integer, primary_key=True)
     chat_id = Column(BIGINT, nullable=False)
     id_game_master = Column(Integer, ForeignKey("gamers.id"), nullable=False)
-    game_start = Column(DateTime,)
+    game_start = Column(DateTime, default=datetime.utcnow())
     game_end = Column(DateTime)
     state = Column(VARCHAR(15), default='Active')  # Active, Ended, Interrupted, All_failed
     theme_id = Column(Integer, default=-1)  # -1 without theme, random any question

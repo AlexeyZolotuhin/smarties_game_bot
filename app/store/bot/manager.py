@@ -24,13 +24,12 @@ class BotManager:
         self.time_for_answer = 0  # app.config.game.time_for_answer
         self.waiting_question = dict()
 
-    async def handle_update(self, upd: UpdateObj, timeout: bool = False):
+    async def handle_update(self, upd: UpdateObj):
         print(upd)
         if upd.my_chat_member and upd.my_chat_member.new_chat_member.user.id == self.app.config.bot.id:
             status = upd.my_chat_member.new_chat_member.status
             match status:
                 case "member":
-                    # TODO вывести кнопку старт с чате с информационным сообщением
                     text = f"Привет! Я игровой бот 'Умники и умницы'. Если хотите начать игру нажмите СТАРТ"
 
                     start_btn = [InlineKeyboardButton("СТАРТ", callback_data="/start")]
@@ -40,10 +39,15 @@ class BotManager:
                                                                reply_markup=inline_kb)
                 case "left":
                     print("left from chat")
+                    # (self, state: str, game_info: GameSession,
+                    game_info: GameSession = await self.app.store.game.get_all_gameinfo(
+                        chat_id=upd.my_chat_member.chat.id)
+                    if game_info:
+                        await self.stop_game(state="Interrupted", game_info=game_info)
                     # TODO завершить игровую сессию: изменить статус игровой сессии и проставить статы в игр. прогрессе
 
-
-        if upd.callback_query:
+        if upd.callback_query:# and \
+                #'Missing data for required field.' not in upd.callback_query.message.from_:
 
             chat_id = upd.callback_query.message.chat.id
             tg_user_id = upd.callback_query.from_.id
@@ -73,7 +77,7 @@ class BotManager:
                     text = f"Установленое игровое время: {data} минут"
                     edit_m = await self.tg_client.edit_message_text(chat_id=chat_id, message_id=message_id, text=text)
 
-                    text = f"Укажите время на ответ"
+                    text = f"Укажите время на ответ (по умолчанию 15 сек)"
                     time_for_answer_btn = [InlineKeyboardButton("10 с", callback_data=10),
                                            InlineKeyboardButton("15 с", callback_data=15),
                                            InlineKeyboardButton("30 с", callback_data=30)]
@@ -147,7 +151,7 @@ class BotManager:
                                f"1 - Зеленая дорожа: 4 вопроса, 2 права на ошибку \n" \
                                f"2 - Желтая дорожка: 3 вопроса, 1 право на ошибку \n" \
                                f"3 - Красная дорожка: 2 вопроса, ошибаться нельзя \n" \
-                               f"Побеждает тот, кто первый ответит на 2 вопроса \n" \
+                               f"Первый, кто прошёл все этапы своей дорожки, становится победителем.\n" \
                                f"Если игровое время закончится - всем засчитывается проигрыш.\n" \
                                f"Истекает время на ответ - засчитывается неверный ответ.\n\n" \
                                f"Вопросы будут задаваться в следующем порядке: \n" \
@@ -178,7 +182,7 @@ class BotManager:
                         text = f"1 - Зеленая дорожа: 4 вопроса, 2 права на ошибку \n" \
                                f"2 - Желтая дорожка: 3 вопроса, 1 право на ошибку \n" \
                                f"3 - Красная дорожка: 2 вопроса, ошибаться нельзя \n" \
-                               f"Побеждает тот, кто первый ответит на 2 вопроса \n" \
+                               f"Первый, кто прошёл все этапы своей дорожки, становится победителем. \n" \
                                f"Если игровое время закончится - всем засчитывается проигрыш.\n" \
                                f"Истекает время на ответ - засчитывается неверный ответ.\n\n" \
                                f"Вопросы будут задаваться в следующем порядке:\n" \
@@ -222,15 +226,7 @@ class BotManager:
                         # Получаем все игровые процессы (игроков) в состоянии проигравших и смотрим, остался
                         # кто еще из игроков в играющем  состоянии, если таких нет, то останавливаем игру без победителя
                         text_failed = ""
-                        if new_number_of_mistakes + answering_gp.number_of_right_answers == \
-                        self.app.config.game.difficulty_levels[answering_gp.difficulty_level].max_questions:
-
-                            gp = await self.app.store.game.update_gp_gamer_status(id_=answering_gp.id,
-                                                                                  gamer_status="Winner")
-                            is_game_stopped = True
-                            await self.stop_game(state="Ended", game_info=game_info, winner=answering_gp.gamer)
-
-                        elif new_number_of_mistakes > self.app.config.game.difficulty_levels[
+                        if new_number_of_mistakes > self.app.config.game.difficulty_levels[
                             answering_gp.difficulty_level].max_mistakes:
                             text_failed = f"Игрок {answering_gp.gamer.first_name} выходит из игры. \n" \
                                           f"Ты слишком часто ошибался, бро"
@@ -246,6 +242,13 @@ class BotManager:
                                     await self.stop_game(state="All_failed", game_info=game_info, )
                                 except Exception as e:
                                     print(e)
+                        elif new_number_of_mistakes + answering_gp.number_of_right_answers == \
+                                self.app.config.game.difficulty_levels[answering_gp.difficulty_level].max_questions:
+
+                            gp = await self.app.store.game.update_gp_gamer_status(id_=answering_gp.id,
+                                                                                  gamer_status="Winner")
+                            is_game_stopped = True
+                            await self.stop_game(state="Ended", game_info=game_info, winner=answering_gp.gamer)
 
                         # Передаем флаг отвечающего следующему в очереди
                         queue_answering = sorted(game_info.game_progress,
@@ -324,7 +327,9 @@ class BotManager:
                     war_text = f"Ая-я-яй {first_name}! Сообщение не для вас."
                     answer = await self.tg_client.send_message(chat_id=chat_id, text=war_text)
 
-        elif upd.message:
+        elif upd.message: #and \
+                #'Missing data for required field.' not in upd.message.from_:
+
             chat_id = upd.message.chat.id
             tg_user_id = upd.message.from_.id
             first_name = upd.message.from_.first_name
@@ -376,7 +381,7 @@ class BotManager:
 
                     text = f"Информация об игре {title}: \n" \
                            f"Время отведенное на игру: {time_for_game} мин. \n" \
-                           f"Старт игры: {game_start} \n" \
+                           f"Старт игры: {game_start} (часовой пояс не учтен)\n" \
                            f"Время на ответ {time_for_answer} сек.\n\n" \
                            f"Информация по игрокам: \n" \
                            f"{gamers_states}"
@@ -391,11 +396,12 @@ class BotManager:
 
             elif text_msg == "/general_rating":
                 gamers = await self.app.store.game.list_gamers()
+                # gamers = sorted(gamers, key=lambda g: g.number_of_victories,)
                 text = "Список игроков пуст"
                 if gamers:
-                    gamers_rating = [f"{g.first_name}: "
+                    gamers_rating = [f"{i+1}. {g.first_name}: "
                                      f"побед - {g.number_of_victories};"
-                                     f" поражений - {g.number_of_defeats}" for g in gamers]
+                                     f" поражений - {g.number_of_defeats}" for i, g in enumerate(gamers)]
                     text = f"Рейтинг игроков: \n\n" + "\n".join(gamers_rating)
 
                 answer = await self.tg_client.send_message(chat_id, text=text)
@@ -429,15 +435,15 @@ class BotManager:
             rk_markup = ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True, resize_keyboard=True)
             text_rk = f"Для вас предоставлено командное меню: \n" \
                       f"/stop - прервать игру. Доступно только для game-master.\n" \
-                      f"/game_inform - получить информацию о текущей игре. Присылается в личку.\n" \
-                      f"/general_rating - получить общий рейтинг. Присылается в личку."
+                      f"/game_inform - получить информацию о текущей игре.\n" \
+                      f"/general_rating - получить общий рейтинг."
 
             answer = await self.tg_client.send_message(chat_id, text=text_rk,
                                                        reply_markup=rk_markup)
 
             # просим указать сколько минут продлиться игра, а также назначенного game-master_а
             text = f"Пользователь {first_name} теперь game-master. Ему предстоит сделать пару настроек." \
-                   f" Укажите игровое время"
+                   f" Укажите игровое время (по умолчанию 5 мин)"
             time_for_game_btn = [InlineKeyboardButton("3 мин", callback_data=3),
                                  InlineKeyboardButton("5 мин", callback_data=5),
                                  InlineKeyboardButton("10 мин", callback_data=10)]

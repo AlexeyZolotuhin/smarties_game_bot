@@ -20,7 +20,7 @@ from app.web.utils import json_response
 
 
 class ThemeAddView(View):
-    @docs(tags=["Smarties game bot"], summary="ThemeAddView", description="Add new theme")
+    @docs(tags=["Quiz"], summary="ThemeAddView", description="Add new theme")
     @request_schema(RequestThemeSchema)
     @response_schema(ResponseThemeSchema, 200)
     @require_auth
@@ -37,7 +37,7 @@ class ThemeAddView(View):
 
 
 class ThemeListView(View):
-    @docs(tags=["Smarties game bot"], summary="ThemeListView", description="Get list of all themes")
+    @docs(tags=["Quiz"], summary="ThemeListView", description="Get list of all themes")
     @response_schema(ResponseThemeListSchema, 200)
     @require_auth
     async def get(self):
@@ -46,7 +46,7 @@ class ThemeListView(View):
 
 
 class QuestionAddView(View):
-    @docs(tags=["Smarties game bot"], summary="QuestionAddView", description="Add new question")
+    @docs(tags=["Quiz"], summary="QuestionAddView", description="Add new question")
     @request_schema(RequestQuestionSchema)
     @response_schema(ResponseQuestionSchema)
     @require_auth
@@ -80,7 +80,7 @@ class QuestionAddView(View):
 
 
 class QuestionListAddView(View):
-    @docs(tags=["Smarties game bot"], summary="QuestionAddView", description="Add new question")
+    @docs(tags=["Quiz"], summary="QuestionListAddView", description="Add many new questions")
     @request_schema(RequestQuestionListSchema)
     @response_schema(ResponseListQuestionSchema)
     @require_auth
@@ -119,7 +119,7 @@ class QuestionListAddView(View):
 
 
 class QuestionListView(View):
-    @docs(tags=["Smarties game bot"], summary="QuestionListView",
+    @docs(tags=["Quiz"], summary="QuestionListView",
           description="Get list of questions all or by theme_id")
     @querystring_schema(ThemeIdSchema)
     @response_schema(ResponseListQuestionSchema)
