@@ -27,7 +27,7 @@ class Chat:
 @dataclass
 class Message:
     message_id: int
-    from_: Optional[MessageFrom]
+    from_: Optional[MessageFrom] = field(metadata={"data_key": "from"})
     chat: Chat
     text: Optional[str] = None
     reply_to_message: Optional["Message"] = None
@@ -57,7 +57,7 @@ class NewChatMember:
 @dataclass
 class MyChatMember:
     chat: Chat
-    from_: MessageFrom
+    from_: MessageFrom = field(metadata={"data_key": "from"})
     new_chat_member: NewChatMember
 
     class Meta:
@@ -67,7 +67,7 @@ class MyChatMember:
 @dataclass
 class CallbackQuery:
     id: int
-    from_: MessageFrom
+    from_: MessageFrom = field(metadata={"data_key": "from"})
     message: Message
     data: str
 
@@ -108,10 +108,3 @@ class SendMessageResponse:
 
     class Meta:
         unknown = EXCLUDE
-
-
-@dataclass
-class RmqReceiverConfig:
-    queue_name: str
-    rabbit_url: str
-    capacity: int = 1

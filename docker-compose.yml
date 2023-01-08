@@ -1,0 +1,140 @@
+version: "3.9"
+
+services:
+  postgres:
+    container_name: tg-postgres
+    image: postgres:latest
+    command:
+      - "postgres"
+      - "-c"
+      - "max_connections=50"
+      - "-c"
+      - "shared_buffers=1GB"
+      - "-c"
+      - "effective_cache_size=4GB"
+      - "-c"
+      - "work_mem=16MB"
+      - "-c"
+      - "maintenance_work_mem=512MB"
+      - "-c"
+      - "random_page_cost=1.1"
+      - "-c"
+      - "temp_file_limit=10GB"
+      - "-c"
+      - "log_min_duration_statement=200ms"
+      - "-c"
+      - "idle_in_transaction_session_timeout=10s"
+      - "-c"
+      - "lock_timeout=1s"
+      - "-c"
+      - "statement_timeout=60s"
+      - "-c"
+      - "shared_preload_libraries=pg_stat_statements"
+      - "-c"
+      - "pg_stat_statements.max=10000"
+      - "-c"
+      - "pg_stat_statements.track=all"
+    environment:
+      POSTGRES_DB: "smarties_game"
+      POSTGRES_USER: "user_pg"
+      POSTGRES_PASSWORD: "user_pass"
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    restart: always
+    volumes:
+      - /postgres/data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    networks:
+      - tg-bridge
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user_pg -d smarties_game"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 4G
+
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4:latest
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "alesh.psk@gmail.com"
+      PGADMIN_DEFAULT_PASSWORD: "pgadminpass"
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    volumes:
+      - /home/alzo/pgadmin:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1G
+    networks:
+      - tg-bridge
+    depends_on:
+      - postgres
+
+  rabbitmq:
+    container_name: tg-rabbitmq
+    build: rabbitmq/
+    hostname: tg-rabbitmq
+    restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=user_mq
+      - RABBITMQ_DEFAULT_PASS=pass_mq
+      - RABBITMQ_SERVER_ADDITIONAL_ERL_ARGS=-rabbit log_levels [{connection,error},{default,error}] disk_free_limit 2147483648
+    volumes:
+      - /home/alzo/rabbitmq:/var/lib/rabbitmq
+    ports:
+      - 15672:15672
+      - 5672:5672
+    networks:
+      - tg-bridge
+    healthcheck:
+        test: ["CMD", "curl", "-f", "http://localhost:15672"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
+
+  poller:
+    container_name: tg-poller
+    build: app_poller/
+    environment:
+      - QUEUE_NAME=smart_bot
+      - RABBIT_URL=amqp://user_mq:pass_mq@tg-rabbitmq:5672/
+      - BOT_TOKEN=5579588003:AAGwGPrSsXtiXuIbiNb-cxYCUr5Vo9jScMg
+    depends_on:
+      - worker
+      - rabbitmq
+    networks:
+      - tg-bridge
+
+  worker:
+    container_name: tg-worker
+    build: .
+    ports:
+      - 8080:8080
+    depends_on:
+      postgres:
+          condition: service_healthy
+      rabbitmq:
+          condition: service_healthy
+   # command: ["./wait-rabbit.py", "python", "main.py"]
+    command: python main.py
+    networks:
+      - tg-bridge
+
+
+networks:
+  tg-bridge:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.50.0/24

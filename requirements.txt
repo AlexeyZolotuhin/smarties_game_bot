@@ -13,3 +13,4 @@ pycparser==2.21
 aiohttp-apispec==2.2.3
 python-telegram-bot==13.14
 marshmallow_dataclass==8.5.8
+aio_pika==8.3.0

@@ -1,6 +1,6 @@
 from typing import Optional
 import aiohttp
-from app.store.tg_api.dataclasses import GetUpdatesResponse, SendMessageResponse
+from app_poller.tg_api.dataclasses import GetUpdatesResponse, SendMessageResponse
 
 
 class TgClient:

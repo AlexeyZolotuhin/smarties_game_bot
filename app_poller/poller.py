@@ -2,13 +2,15 @@ import asyncio
 from asyncio import Task
 from typing import Optional
 from aiohttp import ClientOSError
-from app.store.tg_api.api import TgClient
+from app_poller.tg_api.tg_client import TgClient
+from app_poller.rmq_sender import RmqSender, RmqSenderConfig
+from dataclasses import asdict
 
 
 class Poller:
-    def __init__(self, token: str, queue: asyncio.Queue):
-        self.tg_client = TgClient(token)
-        self.queue = queue
+    def __init__(self, rmq_config: RmqSenderConfig):
+        self.tg_client = TgClient(rmq_config.token)
+        self.rmq_sender = RmqSender(config=rmq_config)
         self._task: Optional[Task] = None
         self.is_running = False
 
@@ -24,13 +26,17 @@ class Poller:
 
             for update in res.result:  # ["result"]:
                 offset = update.update_id + 1  # ["update_id"] + 1
-                self.queue.put_nowait(update)
+                upd_dict = asdict(update)
+                print(upd_dict)
+                await self.rmq_sender.put(data=upd_dict)
 
     async def start(self):
         self.is_running = True
+        await self.rmq_sender.start()
         self._task = asyncio.create_task(self.poll())
 
     async def stop(self):
         self.is_running = False
         if self._task:
             await asyncio.wait([self._task], timeout=30)
+        await self.rmq_sender.stop()

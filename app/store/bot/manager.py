@@ -6,7 +6,7 @@ import typing
 from app.game.models import GameSession, GameProgress, Gamer
 from app.store.tg_api.api import TgClient
 from app.store.tg_api.dataclasses import UpdateObj
-from telegram import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardMarkup, InlineKeyboardButton
+from telegram import ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton
 from sqlalchemy.exc import IntegrityError
 
 if typing.TYPE_CHECKING:
@@ -25,7 +25,7 @@ class BotManager:
         self.waiting_question = dict()
 
     async def handle_update(self, upd: UpdateObj):
-        print(upd)
+        # print(upd)
         if upd.my_chat_member and upd.my_chat_member.new_chat_member.user.id == self.app.config.bot.id:
             status = upd.my_chat_member.new_chat_member.status
             match status:

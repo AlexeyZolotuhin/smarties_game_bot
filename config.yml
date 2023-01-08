@@ -4,14 +4,17 @@ admin:
   login: admin
   password: admin
 database:
-  host: 0.0.0.0
+  host: tg-postgres
   port: 5432
   user: user_pg
   password: user_pass
   database: smarties_game
 bot:
-  token: 5579588003:AAEnLRBNcaZub9BUpX48Iti9_cqiG8i5c48
+  token: 5579588003:AAGwGPrSsXtiXuIbiNb-cxYCUr5Vo9jScMg
   id: 5579588003
+rabbitmq:
+  queue_name: smart_bot
+  rabbit_url: amqp://user_mq:pass_mq@tg-rabbitmq:5672/
 game:
   theme_id: -1
   time_for_game: 5

@@ -49,16 +49,23 @@ class BotConfig:
 
 
 @dataclass
+class RabbitConfig:
+    queue_name: str
+    rabbit_url: str
+
+
+@dataclass
 class Config:
     admin: AdminConfig
     session: SessionConfig = None
     database: DatabaseConfig = None
     game: GameConfig = None
     bot: BotConfig = None
+    rabbit: RabbitConfig = None
 
 
 def setup_config(app: "Application", config_path: str):
-    with open(config_path, "r") as f:
+    with open(config_path, "r", encoding="utf8") as f:
         raw_config = yaml.safe_load(f)
 
     app.config = Config(
@@ -83,9 +90,9 @@ def setup_config(app: "Application", config_path: str):
                                                      max_mistakes=dl_v["max_mistakes"]
                                                      ) for dl_k, dl_v in raw_config["game"]["difficulty_levels"].items()
                                }
-        )
+        ),
+        rabbit=RabbitConfig(
+            queue_name=raw_config["rabbitmq"]["queue_name"],
+            rabbit_url=raw_config["rabbitmq"]["rabbit_url"],
+        ),
     )
-
-
-
-
