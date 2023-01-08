@@ -1,0 +1,1570 @@
+# themes
+{
+  "title": "aiohttp"
+}
+
+#questions
+
+[{
+  "title": "Перечислите available-объекты?",
+  "theme_id": 1,
+  "answers": [
+     {
+       "title": "Task",
+       "is_correct": false
+     },
+     {
+       "title": "Coroutine",
+       "is_correct": false
+     },
+     {
+       "title": "Future",
+       "is_correct": false
+     },
+     {
+       "title": "Все",
+       "is_correct": true
+     }
+   ]
+},
+
+{
+  "title": "Каким методом можно запустить асинхронную фоновую задачу?",
+  "theme_id": 1,
+  "answers": [
+     {
+       "title": "asyncio.run",
+       "is_correct": false
+     },
+     {
+       "title": "loop.run_until_complete",
+       "is_correct": false
+     },
+     {
+       "title": "loop.run_forever",
+       "is_correct": false
+     },
+     {
+       "title": "Всеми перечисленными",
+       "is_correct": true
+     }
+   ]
+},
+
+{
+  "title": "Методы для запуска нескольких короутин?",
+  "theme_id": 1,
+  "answers": [
+     {
+       "title": "Gather",
+       "is_correct": false
+     },
+     {
+       "title": "Wait",
+       "is_correct": false
+     },
+     {
+       "title": "create_task в цикле",
+       "is_correct": false
+     },
+     {
+       "title": "Все перечисленные",
+       "is_correct": true
+     }
+   ]
+},
+
+{
+  "title": "Какое исключение вызывается при отмене Task?",
+  "theme_id": 1,
+  "answers": [
+     {
+       "title": "TypeError",
+       "is_correct": false
+     },
+     {
+       "title": "CancelledError",
+       "is_correct": true
+     },
+     {
+       "title": "IntegrityError",
+       "is_correct": false
+     }
+   ]
+},
+
+{
+  "title": "Как называется примитив синхронизации на основе счетчика?",
+  "theme_id": 1,
+  "answers": [
+     {
+       "title": "Event",
+       "is_correct": false
+     },
+     {
+       "title": "Semaphore",
+       "is_correct": true
+     },
+     {
+       "title": "Lock",
+       "is_correct": false
+     }
+   ]
+},
+
+{
+  "title": "При переходе по ссылке, браузер преобразует домен в?",
+  "theme_id": 1,
+  "answers": [
+     {
+       "title": "IP адрес",
+       "is_correct": true
+     },
+     {
+       "title": "TCP адрес",
+       "is_correct": false
+     },
+     {
+       "title": "TTL",
+       "is_correct": false
+     },
+     {
+       "title": "MAC адрес",
+       "is_correct": false
+     }
+   ]
+},
+
+{
+  "title": "Какое поведение характерно при PUT запросе?",
+  "theme_id": 1,
+  "answers": [
+     {
+       "title": "Получение информации",
+       "is_correct": false
+     },
+     {
+       "title": "Изменение информации",
+       "is_correct": true
+     },
+     {
+       "title": "Создание информации",
+       "is_correct": false
+     }
+   ]
+}
+]
+######################################################################################################################################
+# themes
+{
+  "title": "python"
+}
+
+
+[{
+  "title": "Что представляет собой переменная в Python?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "Хранилище данных",
+       "is_correct": false
+     },
+     {
+       "title": "И ссылка и хранилище данных",
+       "is_correct": false
+     },
+     {
+       "title": "Ссылка на объект в памяти",
+       "is_correct": true
+     }
+   ]
+},
+
+{
+  "title": "Как называется присваивание вида a = b = c = 0?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "Унитарным присваиванием",
+       "is_correct": false
+     },
+     {
+       "title": "Каскадным присваиванием",
+       "is_correct": true
+     },
+     {
+       "title": "Множественным присваивание",
+       "is_correct": false
+     }
+   ]
+},
+
+{
+  "title": "Различаются ли имена переменных arg, Arg, ARG?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "Нет",
+       "is_correct": false
+     },
+     {
+       "title": "Иногда",
+       "is_correct": false
+     },
+     {
+       "title": "Да",
+       "is_correct": true
+     }
+   ]
+},
+{
+  "title": "Какой тип данных отобразит команда print(type(3.67))?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "float",
+       "is_correct": true
+     },
+     {
+       "title": "int",
+       "is_correct": false
+     },
+     {
+       "title": "str",
+       "is_correct": false
+     }
+   ]
+},
+
+{
+  "title": "Какую команду следует записать, чтобы использовать модуль math в программе?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "math import",
+       "is_correct": false
+     },
+     {
+       "title": "math",
+       "is_correct": false
+     },
+     {
+       "title": "import math",
+       "is_correct": true
+     }
+   ]
+},
+
+{
+  "title": "Выберите команду, которая позволяет сохранять строку, введенную с клавиатуры.",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "d = float(input())",
+       "is_correct": false
+     },
+     {
+       "title": "d = int(input())",
+       "is_correct": false
+     },
+     {
+       "title": "d = input()",
+       "is_correct": true
+     }
+   ]
+},
+
+{
+  "title": "К какому типу данных относятся строки?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "К изменяемым типам",
+       "is_correct": false
+     },
+     {
+       "title": "К обоим, в зависимости от определения строки",
+       "is_correct": false
+     },
+     {
+       "title": "К неизменяемым типам",
+       "is_correct": true
+     }
+   ]
+},
+
+{
+  "title": "Что возвратит метод String.index, если указанный фрагмент не будет найден в строке?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "Ошибка ValueError",
+       "is_correct": true
+     },
+     {
+       "title": "Значение 0",
+       "is_correct": false
+     },
+     {
+       "title": "Значение None",
+       "is_correct": false
+     }
+   ]
+},
+
+{
+  "title": "Что возвратит метод String.find, если указанный фрагмент не будет найден в строке?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "значение -1",
+       "is_correct": true
+     },
+     {
+       "title": "Значение 0",
+       "is_correct": false
+     },
+     {
+       "title": "Значение None",
+       "is_correct": false
+     }
+   ]
+},
+
+{
+  "title": "К каким типам данных относится список?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "К изменяемым",
+       "is_correct": true
+     },
+     {
+       "title": "К неизменяемым",
+       "is_correct": false
+     },
+     {
+       "title": "И к тем и к тем",
+       "is_correct": false
+     }
+   ]
+},
+
+{
+  "title": "Какой результат сравнения будет получен при выполнении команды: [1, 2, 3] > [1, 1, 10]",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "False",
+       "is_correct": false
+     },
+     {
+       "title": "True",
+       "is_correct": true
+     }
+   ]
+},
+
+{
+  "title": "Что произойдет, когда итератор достигнет конца списка и попытается возвратить следующий элемент?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "Ошибка ValueError",
+       "is_correct": false
+     },
+     {
+       "title": "Ошибка StopIteration",
+       "is_correct": true
+     },
+     {
+       "title": "Переместится на первый элемент",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Какое ключевое слово используется для создания функции?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "fun",
+       "is_correct": false
+     },
+     {
+       "title": "function",
+       "is_correct": false
+     },
+     {
+       "title": "def",
+       "is_correct": true
+     }
+   ]
+},
+{
+  "title": "Каким ключевым словом обозначается анонимная функция?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "lambda",
+       "is_correct": true
+     },
+     {
+       "title": "alpha",
+       "is_correct": false
+     },
+     {
+       "title": "anonym",
+       "is_correct": false
+     }
+   ]
+},
+
+{
+  "title": "Что появится на экране после выполнения следующей программы? \n a = 4 \n print(a, 'a')",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "4 a",
+       "is_correct": true
+     },
+     {
+       "title": "a 4",
+       "is_correct": false
+     },
+     {
+       "title": "4 4",
+       "is_correct": false
+     }
+   ]
+},
+
+{
+  "title": "Сколько итераций выполнит цикл? \n for i in range(1, 6): \n print('Python')",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "4",
+       "is_correct": false
+     },
+     {
+       "title": "6",
+       "is_correct": false
+     },
+     {
+       "title": "5",
+       "is_correct": true
+     }
+   ]
+},
+{
+  "title": "Какую последовательность чисел даст вам функция range(8)?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "1, 2, 3, 4, 5, 6, 7",
+       "is_correct": false
+     },
+     {
+       "title": "0, 1, 2, 3, 4, 5, 6, 7",
+       "is_correct": true
+     },
+     {
+       "title": "0, 1, 2, 3, 4, 5, 6, 7, 8",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Какую последовательность чисел даст вам функция range(3, 11, 2)?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "3, 5, 7, 9",
+       "is_correct": true
+     },
+     {
+       "title": "3, 4, 5, 6, 7, 8, 9, 10, 11",
+       "is_correct": false
+     },
+     {
+       "title": "3, 5, 7, 9, 11",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Что обозначает тип данных int?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "Целочисленное",
+       "is_correct": true
+     },
+     {
+       "title": "Вещественное",
+       "is_correct": false
+     },
+     {
+       "title": "Строковое",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Укажите оператор ввода:",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "input()",
+       "is_correct": true
+     },
+     {
+       "title": "print()",
+       "is_correct": false
+     },
+     {
+       "title": "random()",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Сколько возможных значений у переменной типа bool?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "4",
+       "is_correct": false
+     },
+     {
+       "title": "2",
+       "is_correct": true
+     },
+     {
+       "title": "Сколько угодно",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Для чего нужен оператор break?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "Для завершения программы",
+       "is_correct": false
+     },
+     {
+       "title": "Для выхода из цикла",
+       "is_correct": true
+     },
+     {
+       "title": "Для поломки компьютера",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "а = 345. Что выведет команда print(//100)?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "3",
+       "is_correct": true
+     },
+     {
+       "title": "5",
+       "is_correct": false
+     },
+     {
+       "title": "34",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Необходимо собрать и вывести все уникальные слова из строки рекламного текста. Какой из перечисленных типов данных Python подходит лучше всего?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "кортеж (tuple)",
+       "is_correct": false
+     },
+     {
+       "title": "список (list)",
+       "is_correct": false
+     },
+     {
+       "title": "множество (set)",
+       "is_correct": true
+     }
+   ]
+},
+{
+  "title": "Как вывести список методов и атрибутов объекта x?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "help(x)",
+       "is_correct": false
+     },
+     {
+       "title": "info(x)",
+       "is_correct": false
+     },
+     {
+       "title": "dir(x)",
+       "is_correct": true
+     }
+   ]
+},
+{
+  "title": "Какая из перечисленных инструкций выполнится быстрее всего, если n = 10**6?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "a = list(i for i in range(n))",
+       "is_correct": false
+     },
+     {
+       "title": "a = (i for i in range(n))",
+       "is_correct": true
+     },
+     {
+       "title": "a = [i for i in range(n)]",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Что выведет на экран следующий код?\n a, *b, c = [1, 2] \n print(a, b, c)",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "[1] [] [2]",
+       "is_correct": false
+     },
+     {
+       "title": "1 0 2",
+       "is_correct": false
+     },
+     {
+       "title": "1 [] 2",
+       "is_correct": true
+     }
+   ]
+},
+{
+  "title": "Что будет получено в результате вычисления следующего выражения: (0 < 5 <= 3) and (0 / 0):",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "True (или 1) ",
+       "is_correct": false
+     },
+     {
+       "title": "False (или 0)",
+       "is_correct": true
+     },
+     {
+       "title": "Синтаксическая ошибка",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Сокрытие информации о внутреннем устройстве объекта, при котором вся работа с объектом ведется только через общедоступный интерфейс называется:",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "абстракцией",
+       "is_correct": true
+     },
+     {
+       "title": "инкапсуляцией",
+       "is_correct": true
+     },
+     {
+       "title": "агрегацией",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Чем являются функции в Python?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "Экземплярами",
+       "is_correct": false
+     },
+     {
+       "title": "Классами",
+       "is_correct": false
+     },
+     {
+       "title": "Объектами",
+       "is_correct": true
+     }
+   ]
+},
+{
+  "title": "Какие из видов функций являются уникальными?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "Итераторы",
+       "is_correct": false
+     },
+     {
+       "title": "Анонимные",
+       "is_correct": false
+     },
+     {
+       "title": "Именные",
+       "is_correct": true
+     }
+   ]
+},
+{
+  "title": "Какая функция создается с помощью следующего кода: \ndef add(x, y):\n  return x + y",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "Анонимная функция",
+       "is_correct": false
+     },
+     {
+       "title": "Именная функция",
+       "is_correct": true
+     },
+     {
+       "title": "Рекурсивная функция",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Какие вычисления происходят при вызове рекурсивной функции?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "Циклические",
+       "is_correct": true
+     },
+     {
+       "title": "Обратные",
+       "is_correct": false
+     },
+     {
+       "title": "Ленивые",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Какая из следующих функций преобразует строку в список в Python?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "list(mystring)",
+       "is_correct": true
+     },
+     {
+       "title": "tuple(mystring)",
+       "is_correct": false
+     },
+     {
+       "title": "eval(mystring)",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Какая из следующих функций преобразует одиночный символ в его целочисленный эквивалент в Python?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "oct(x))",
+       "is_correct": false
+     },
+     {
+       "title": "hex(x)",
+       "is_correct": false
+     },
+     {
+       "title": "ord(x)",
+       "is_correct": true
+     }
+   ]
+},
+{
+  "title": "Что из перечисленного эквивалентно random.randrange(3)?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "random.select(range(3))",
+       "is_correct": false
+     },
+     {
+       "title": "random.choice(range(0, 3))",
+       "is_correct": true
+     },
+     {
+       "title": "range(3)",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Какой из следующих операторов в Python оценивается как истина, если он не находит переменную в указанной последовательности, и ложь в противном случае?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "not in",
+       "is_correct": true
+     },
+     {
+       "title": "is",
+       "is_correct": true
+     },
+     {
+       "title": "//",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Какая из следующих функций используется для проверки, все ли символы в строке находятся в нижнем регистре?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "istitle()",
+       "is_correct": false
+     },
+     {
+       "title": "isspace()",
+       "is_correct": false
+     },
+     {
+       "title": "islower()",
+       "is_correct": true
+     }
+   ]
+},
+{
+  "title": "Какая из следующих функций используется для проверки, все ли символы в строке являются десятичными?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "title()",
+       "is_correct": false
+     },
+     {
+       "title": "swapcase()",
+       "is_correct": false
+     },
+     {
+       "title": "isdecimal()",
+       "is_correct": true
+     }
+   ]
+},
+{
+  "title": "Какая из следующих функций преобразует объект в строку в Python?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "str(x)",
+       "is_correct": true
+     },
+     {
+       "title": "float(x)",
+       "is_correct": false
+     },
+     {
+       "title": "long(x [,base])",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Какой оператор верный для power(x^y)?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "X^^y",
+       "is_correct": false
+     },
+     {
+       "title": "X**y",
+       "is_correct": true
+     },
+     {
+       "title": "Х ^ у",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Чувствителен ли Python к регистру при работе с идентификаторами?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "Да",
+       "is_correct": true
+     },
+     {
+       "title": "Нет",
+       "is_correct": false
+     },
+     {
+       "title": "Иногда",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Какова максимально возможная длина идентификатора?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "79",
+       "is_correct": true
+     },
+     {
+       "title": "48",
+       "is_correct": false
+     },
+     {
+       "title": "63",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Что из перечисленного является недопустимой переменной?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "_",
+       "is_correct": false
+     },
+     {
+       "title": "foo",
+       "is_correct": false
+     },
+     {
+       "title": "1st_string",
+       "is_correct": true
+     }
+   ]
+},
+{
+  "title": "Какая функция перегружает оператор + ?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "__sum__()",
+       "is_correct": false
+     },
+     {
+       "title": "__add__()",
+       "is_correct": true
+     },
+     {
+       "title": "__plus__()",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Какие типы элементов принимает random.shuffle ()?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "целые числа",
+       "is_correct": false
+     },
+     {
+       "title": "кортежи",
+       "is_correct": false
+     },
+     {
+       "title": "списки",
+       "is_correct": true
+     }
+   ]
+},
+{
+  "title": "Какой диапазон значений может возвращать random.random()?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "(0.0, 1.0)",
+       "is_correct": false
+     },
+     {
+       "title": "[0.0, 1.0)",
+       "is_correct": true
+     },
+     {
+       "title": "(0.0, 1.0]",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Какая функция перегружает оператор == ?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "__equ__()",
+       "is_correct": true
+     },
+     {
+       "title": "__isequal__()",
+       "is_correct": false
+     },
+     {
+       "title": "__eq__()",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Что из следующего в Python является недопустимым?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "a_b_c = 1,000,000",
+       "is_correct": false
+     },
+     {
+       "title": "a,b,c = 1000, 2000, 3000",
+       "is_correct": false
+     },
+     {
+       "title": "a b c = 1000 2000 3000",
+       "is_correct": true
+     }
+   ]
+},
+{
+  "title": "Какой ответ выдаст выражение 22 % 3?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "5",
+       "is_correct": false
+     },
+     {
+       "title": "0",
+       "is_correct": false
+     },
+     {
+       "title": "1",
+       "is_correct": true
+     }
+   ]
+},
+{
+  "title": "Что возвращает int(math.pow(3, 2))?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "9",
+       "is_correct": true
+     },
+     {
+       "title": "6",
+       "is_correct": false
+     },
+     {
+       "title": "error, too many arguments",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Каково значение x, если x = math.sqrt(4) ?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "2.0",
+       "is_correct": true
+     },
+     {
+       "title": "2",
+       "is_correct": false
+     },
+     {
+       "title": "(2.0, -2.0)",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Что из перечисленного является кортежем Python?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "[1, 2, 3]",
+       "is_correct": false
+     },
+     {
+       "title": "(1, 2, 3)",
+       "is_correct": true
+     },
+     {
+       "title": "{1, 2, 3}",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Какая из следующих переменных среды для Python является альтернативным путем поиска модуля?",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "PYTHONPATH",
+       "is_correct": false
+     },
+     {
+       "title": "PYTHONCASEOK",
+       "is_correct": false
+     },
+     {
+       "title": "PYTHONHOME",
+       "is_correct": true
+     }
+   ]
+},
+{
+  "title": "Что будет напечатано при исполнении следующего кода? Используется Python 2.x .print(type(1 / 2))",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "type 'tuple'",
+       "is_correct": false
+     },
+     {
+       "title": "type 'int'",
+       "is_correct": true
+     },
+     {
+       "title": "type 'number'",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Ввод целого числа с клавиатуры записывается как:",
+  "theme_id": 2,
+  "answers": [
+     {
+       "title": "int(input())",
+       "is_correct": true
+     },
+     {
+       "title": "input(int())",
+       "is_correct": false
+     },
+     {
+       "title": "input()",
+       "is_correct": false
+     }
+   ]
+}
+]
+
+#############################################################################################################################
+# BD theme
+
+{
+  "title": "data_base"
+}
+
+#questions
+
+[
+{
+  "title": "Основное отличие реляционной БД:",
+  "theme_id": 3,
+  "answers": [
+     {
+       "title": "данные организовываются в виде отношений",
+       "is_correct": true
+     },
+     {
+       "title": "Строго древовидная структура",
+       "is_correct": false
+     },
+     {
+       "title": "Представлена в виде графов",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Слово Null в БД используется для обозначения:",
+  "theme_id": 3,
+  "answers": [
+     {
+       "title": "Неопределенных значений",
+       "is_correct": true
+     },
+     {
+       "title": "Пустых значений",
+       "is_correct": false
+     },
+     {
+       "title": "Нуля",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Что такое кортеж в БД?",
+  "theme_id": 3,
+  "answers": [
+     {
+       "title": "Совокупность атрибутов",
+       "is_correct": false
+     },
+     {
+       "title": "Множество пар атрибутов и их значений",
+       "is_correct": true
+     },
+     {
+       "title": "Схема отношений данных",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Какой оператор SQL используется для обновления данных в базе данных?",
+  "theme_id": 3,
+  "answers": [
+     {
+       "title": "UPDATE",
+       "is_correct": true
+     },
+     {
+       "title": "SAVE",
+       "is_correct": false
+     },
+     {
+       "title": "MODIFY",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Какой оператор SQL используется для удаления данных из БД?",
+  "theme_id": 3,
+  "answers": [
+     {
+       "title": "DELETE",
+       "is_correct": true
+     },
+     {
+       "title": "COLLAPSE",
+       "is_correct": false
+     },
+     {
+       "title": "REMOVE",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Какое ключевое слово SQL используется для сортировки набора результатов?",
+  "theme_id": 3,
+  "answers": [
+     {
+       "title": "SORT",
+       "is_correct": false
+     },
+     {
+       "title": "ORDER BY",
+       "is_correct": true
+     },
+     {
+       "title": "ORDER",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Какие из следующих групповых функций игнорируют значения NULL?",
+  "theme_id": 3,
+  "answers": [
+     {
+       "title": "COUNT",
+       "is_correct": false
+     },
+     {
+       "title": "SUM",
+       "is_correct": false
+     },
+     {
+       "title": "Все вышеперечисленное",
+       "is_correct": true
+     }
+   ]
+},
+{
+  "title": "Какая из следующих команд делает обновления, выполняемые транзакцией, постоянными в базе данных?",
+  "theme_id": 3,
+  "answers": [
+     {
+       "title": "TRUNCATE",
+       "is_correct": false
+     },
+     {
+       "title": "DELETE",
+       "is_correct": false
+     },
+     {
+       "title": "COMMIT",
+       "is_correct": true
+     }
+   ]
+},
+{
+  "title": "Какая команда отменяет все обновления, выполненные SQL в транзакции?",
+  "theme_id": 3,
+  "answers": [
+     {
+       "title": "TRUNCATE",
+       "is_correct": false
+     },
+     {
+       "title": "DELETE",
+       "is_correct": false
+     },
+     {
+       "title": "ROLLBACK",
+       "is_correct": true
+     }
+   ]
+},
+{
+  "title": "Найдите все города с влажностью 89",
+  "theme_id": 3,
+  "answers": [
+     {
+       "title": "SELECT city FROM weather WHERE humidity = 89;",
+       "is_correct": true
+     },
+     {
+       "title": "SELECT city FROM weather;",
+       "is_correct": false
+     },
+     {
+       "title": "SELECT city WHERE humidity = 89;",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Что из перечисленного является НЕ верным?",
+  "theme_id": 3,
+  "answers": [
+     {
+       "title": "SELECT SYSDATE - (SYSDATE - 2) FROM DUAL;",
+       "is_correct": false
+     },
+     {
+       "title": "SELECT SYSDATE - (SYSDATE + 2) FROM DUAL;",
+       "is_correct": false
+     },
+     {
+       "title": "Ничего из вышеперечисленного",
+       "is_correct": true
+     }
+   ]
+},
+{
+  "title": "Как удалить таблицу my_table:",
+  "theme_id": 3,
+  "answers": [
+     {
+       "title": "DELETE FROM my_table",
+       "is_correct": false
+     },
+     {
+       "title": "DROP TABLE my_table",
+       "is_correct": true
+     },
+     {
+       "title": "DELETE TABLE my_table",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Каким запросом можно удалить все записи из таблицы my_table (но не саму таблицу)?",
+  "theme_id": 3,
+  "answers": [
+     {
+       "title": "DROP TABLE my_table",
+       "is_correct": false
+     },
+     {
+       "title": "DELETE TABLE my_table",
+       "is_correct": false
+     },
+     {
+       "title": "DELETE FROM my_table",
+       "is_correct": true
+     }
+   ]
+},
+{
+  "title": "Что делает конструкция ORDER BY ASC?",
+  "theme_id": 3,
+  "answers": [
+     {
+       "title": "ASC вообще не существует",
+       "is_correct": false
+     },
+     {
+       "title": "Сортирует записи по возрастанию",
+       "is_correct": true
+     },
+     {
+       "title": "Сортирует записи по убыванию",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Выберите верное утверждение относительно запроса: SELECT name FROM users",
+  "theme_id": 3,
+  "answers": [
+     {
+       "title": "Результат будет содержать 2 столбца",
+       "is_correct": false
+     },
+     {
+       "title": "Результат будет содержать 1 столбец",
+       "is_correct": true
+     },
+     {
+       "title": "В запросе ошибка",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Что делает команда CREATE?",
+  "theme_id": 3,
+  "answers": [
+     {
+       "title": "Добавляет запись.",
+       "is_correct": false
+     },
+     {
+       "title": "Создаёт таблицу.",
+       "is_correct": true
+     },
+     {
+       "title": "Такой команды нет",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Для чего используется ключевое слово DISTINCT?",
+  "theme_id": 3,
+  "answers": [
+     {
+       "title": "Для ускорения выборки.",
+       "is_correct": false
+     },
+     {
+       "title": "Для выборки уникальных записей.",
+       "is_correct": true
+     },
+     {
+       "title": "Такого ключевого слова нет.",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Выберите верное утверждение относительно индекса:",
+  "theme_id": 3,
+  "answers": [
+     {
+       "title": "Ускоряет любые запросы.",
+       "is_correct": false
+     },
+     {
+       "title": "Ускоряет выборку по полю",
+       "is_correct": true
+     },
+     {
+       "title": "Такого ключевого слова нет.",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Для чего применяются индексы?",
+  "theme_id": 3,
+  "answers": [
+     {
+       "title": "Для ускорения операций выборки.",
+       "is_correct": true
+     },
+     {
+       "title": "Для уменьшения места.",
+       "is_correct": false
+     },
+     {
+       "title": "Для отката изменений.",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "В некоторой таблице есть поле field. Как правильно вывести все записи, где значение поля field содержит строку (либо подстроку) string:",
+  "theme_id": 3,
+  "answers": [
+     {
+       "title": "WHERE field == 'string'",
+       "is_correct": false
+     },
+     {
+       "title": "WHERE field LIKE '%string%'",
+       "is_correct": true
+     },
+     {
+       "title": "WHERE field = 'string'",
+       "is_correct": false
+     }
+   ]
+},
+{
+  "title": "Что получится в результате запроса SELECT * FROM my_table WHERE 1=1?",
+  "theme_id": 3,
+  "answers": [
+     {
+       "title": "Получим ни одной записи.",
+       "is_correct": false
+     },
+     {
+       "title": "Выведутся все записи из таблицы 'my_table'",
+       "is_correct": true
+     },
+     {
+       "title": "Синтаксическая ошибка (из-за 1=1)",
+       "is_correct": false
+     }
+   ]
+}
+]
