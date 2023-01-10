@@ -10,9 +10,11 @@ RUN pip install -r requirements.txt
 
 COPY app app
 COPY alembic alembic
-COPY alembic.ini config.yml main.py questions_for_quiz ./
+COPY configs configs
+COPY alembic.ini main.py questions_for_quiz ./
 
 USER worker
+CMD ["python", "-m", "alembic", "revision", "--autogenerate", "-m" "'Init table'"]
 CMD ["python", "-m", "alembic", "upgrade", "head"]
 #CMD ["python", "main.py"]
 

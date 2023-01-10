@@ -1,6 +1,7 @@
 import asyncio
 from logging.config import fileConfig
-
+import os
+import yaml
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 from sqlalchemy.engine import Connection
@@ -25,10 +26,23 @@ if config.config_file_name is not None:
 # target_metadata = mymodel.Base.metadata
 target_metadata = db.metadata
 
+
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
 # ... etc.
+def get_url():
+    config_path = os.path.join(os.path.dirname(os.path.dirname(os.path.realpath(__file__))), "configs/config.yml")
+
+    with open(config_path, "r", encoding="utf8") as f:
+        raw_config = yaml.safe_load(f)
+
+    return "postgresql+asyncpg://%s:%s@%s/%s" % (
+        raw_config["database"]["user"],
+        raw_config["database"]["password"],
+        raw_config["database"]["host"],
+        raw_config["database"]["database"],
+    )
 
 
 def run_migrations_offline() -> None:
@@ -43,7 +57,8 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    url = config.get_main_option("sqlalchemy.url")
+    # url = config.get_main_option("sqlalchemy.url")
+    url = get_url()
     context.configure(
         url=url,
         target_metadata=target_metadata,
@@ -69,6 +84,8 @@ async def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
+    config.set_section_option("alembic", "sqlalchemy.url", get_url())
+
     connectable = AsyncEngine(
         engine_from_config(
             config.get_section(config.config_ini_section),

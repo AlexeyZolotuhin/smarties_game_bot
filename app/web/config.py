@@ -26,7 +26,6 @@ class DatabaseConfig:
     password: str = "postgres"
     database: str = "project"
 
-
 @dataclass
 class DifficultyLevel:
     color: str
